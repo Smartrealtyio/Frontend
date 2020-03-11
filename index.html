@@ -327,12 +327,12 @@
                         <div class="calculate-form_field_control">
                             <div class="calculate-form_radios-group wide-group-2">
                                 <label class="calculate-form_radio">
-                                    <input checked type="radio" name="city" value="MSK">
+                                    <input checked type="radio" name="city_id" value="0" required>
                                     <span class="calculate-form_radio_mask"></span>
                                     <span class="calculate-form_radio_text icon icon-msk">Москва</span>
                                 </label>
                                 <label class="calculate-form_radio">
-                                    <input type="radio" name="city" value="SPB">
+                                    <input type="radio" name="city_id" value="1" required>
                                     <span class="calculate-form_radio_mask"></span>
                                     <span class="calculate-form_radio_text icon icon-spb">Санкт-Петербург</span>
                                 </label>
@@ -358,15 +358,81 @@
                         <div class="calculate-form_field_control">
                             <div class="calculate-form_radios-group wide-group-2">
                                 <label class="calculate-form_radio">
-                                    <input type="radio" name="quality" value="second">
+                                    <input type="radio" name="secondary" value="1" required>
                                     <span class="calculate-form_radio_mask"></span>
                                     <span class="calculate-form_radio_text">Вторичка</span>
                                 </label>
                                 <label class="calculate-form_radio">
-                                    <input type="radio" name="quality" value="new">
+                                    <input type="radio" name="secondary" value="0" required>
                                     <span class="calculate-form_radio_mask"></span>
                                     <span class="calculate-form_radio_text">Новостройка</span>
                                 </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="newhouse calculate-form_field">
+                        <div class="calculate-form_field_label">
+                            Готовность
+                        </div>
+                        <div class="calculate-form_field_control">
+                            <div class="calculate-form_radios-group wide-group-2">
+                                <label class="calculate-form_radio">
+                                    <input type="radio" name="is_rented" value="1" required>
+                                    <span class="calculate-form_radio_mask"></span>
+                                    <span class="calculate-form_radio_text">Сдан</span>
+                                </label>
+                                <label class="calculate-form_radio">
+                                    <input type="radio" name="is_rented" value="0" required>
+                                    <span class="calculate-form_radio_mask"></span>
+                                    <span class="calculate-form_radio_text">Не сдан</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="newhouse calculate-form_field calculate-form_field-double-custom mt-20">
+                        <div class="calculate-form_field">
+                            <div class="calculate-form_field_label">
+                                Год
+                            </div>
+                            <div class="calculate-form_field_control">
+                                <select name="rent_year" id="rent_year">
+                                    <option value="2020" selected>2020</option>
+                                    <option value="2019">2019</option>
+                                    <option value="2018">2018</option>
+                                    <option value="2017">2017</option>
+                                </select>
+                            </div>
+                        </div>
+                    
+                        <div class="calculate-form_field">
+                            <div class="calculate-form_field_label">
+                                Квартал
+                            </div>
+                            <div class="calculate-form_field_control">
+                                <div class="calculate-form_radios-group wide-group">
+                                    <label class="calculate-form_radio">
+                                        <input type="radio" name="rent_quarter" value="1">
+                                        <span class="calculate-form_radio_mask"></span>
+                                        <span class="calculate-form_radio_text"><b>1</b></span>
+                                    </label>
+                                    <label class="calculate-form_radio">
+                                        <input type="radio" name="rent_quarter" value="2" checked>
+                                        <span class="calculate-form_radio_mask"></span>
+                                        <span class="calculate-form_radio_text"><b>2</b></span>
+                                    </label>
+                                    <label class="calculate-form_radio">
+                                        <input type="radio" name="rent_quarter" value="3">
+                                        <span class="calculate-form_radio_mask"></span>
+                                        <span class="calculate-form_radio_text"><b>3</b></span>
+                                    </label>
+                                    <label class="calculate-form_radio">
+                                        <input type="radio" name="rent_quarter" value="4">
+                                        <span class="calculate-form_radio_mask"></span>
+                                        <span class="calculate-form_radio_text"><b>4</b></span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -378,7 +444,7 @@
                         <div class="calculate-form_field_control">
                             <div class="calculate-form_radios-group wide-group">
                                 <label class="calculate-form_radio">
-                                    <input type="radio" name="rooms" value="-1">
+                                    <input type="radio" name="rooms" value="0">
                                     <span class="calculate-form_radio_mask"></span>
                                     <span class="calculate-form_radio_text">&nbsp;&nbsp;<b>Студия</b>&nbsp;&nbsp;</span>
                                 </label>
@@ -437,7 +503,7 @@
                             </div>
                             <div class="calculate-form_field_control">
                                 <input required
-                                    type="number" name="life_sq" data-validator min="5">&nbsp;
+                                    type="number" name="full_sq" data-validator min="5">&nbsp;
                                 <span class="calculate-form_field_unit">
                                     м<sup>2</sup>
                                 </span>
@@ -452,7 +518,7 @@
                             <span class="calculate-form_checkbox_text">Ремонт</span>
                         </label>
                         <label class="calculate-form_checkbox">
-                            <input checked type="checkbox" name="has_elevator">
+                            <input checked type="checkbox" name="elevator">
                             <span class="calculate-form_checkbox_mask"></span>
                             <span class="calculate-form_checkbox_text">Есть лифт</span>
                         </label>
@@ -490,6 +556,7 @@
                         </div>
                     </div>
                 </div>
+                <div class="calculate-form_loading" id="loading_results" style="display: none;"></div>
             </div>
 
             <div class="calculate-form_result" id="results" style="display: none;">

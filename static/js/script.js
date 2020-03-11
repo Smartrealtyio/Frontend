@@ -157,6 +157,19 @@ for (let k = 1; k <= 32; k++) {
 
         $('[data-validator]').validator();
 
+        $("input[name='secondary']").on("change", function () {
+
+            if( $(this).val() == 1) {
+                $('.newhouse').hide()
+                console.log($(this).val() )
+            }
+            else {
+                $('.newhouse').show()
+                console.log($(this).val() )
+            }
+                
+        })
+
 
         $('#search-init').on('click', () => {
             iniSearchForm();
@@ -165,12 +178,12 @@ for (let k = 1; k <= 32; k++) {
             iniAnalyzeForm();
         });
 
-        $('input[name="city"]').on('change', (e) => {
+        $('input[name="city_id"]').on('change', (e) => {
             switch(e.target.value) {
-                case 'MSK' :
+                case '0' :
                     myMap.setCenter([55.76, 37.64],12);
                     break;
-                case 'SPB' :
+                case '1' :
                     myMap.setCenter([59.93, 30.31],12);
                     break;
                 default :
@@ -391,9 +404,15 @@ for (let k = 1; k <= 32; k++) {
                     switch (itemType) {
                         case 'checkbox':
                             values[itemModel.attr('name')] = itemModel.is(':checked') ? '1' : '0';
+                            console.log(values[itemModel.attr('name')],itemModel.val());
+                            break;
+                        case 'radio':
+                            if(itemModel.is(':checked')) values[itemModel.attr('name')] = itemModel.val();
+                            console.log(itemModel.attr('name'),itemModel.val());
                             break;
                         default:
                             values[itemModel.attr('name')] = itemModel.val() || undefined;
+                            console.log(values[itemModel.attr('name')],itemModel.val());
                     }
                 }
             });
@@ -404,6 +423,8 @@ for (let k = 1; k <= 32; k++) {
 
             results.hide();
             emptyMsg.hide();
+
+            $("#loading_results").show();
 
             $.ajax({
                 url: '/map',
@@ -446,6 +467,7 @@ for (let k = 1; k <= 32; k++) {
                     resultPrice.text(res.Price.toLocaleString() + ' руб.');
                     resultDuration.text(res.Duration ? res.Duration + ' дн.' : ' - ');
                     results.show();
+                    $("#loading_results").hide();
                 } else {
                     results.hide();
                 }
