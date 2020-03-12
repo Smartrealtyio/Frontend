@@ -8,7 +8,6 @@ for (let k = 1; k <= 32; k++) {
     }
 }
 
-
 (function($) {
 
     $.fn.validator = function() {
@@ -538,7 +537,9 @@ for (let k = 1; k <= 32; k++) {
 
 
 
-
-
-
 })(jQuery);
+
+window.onload = function() {
+    // set quartal
+    $("input[value='"+Math.floor((new Date().getMonth() + 3) / 3)+"'][name='rent_quarter']").attr("checked",true);
+}
