@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import calculateBlock from '../../partials/calculate'
+import calculateBlock from '../../calc/calcBlock'
 export default {
     components: {
         calculateBlock

@@ -45,7 +45,7 @@ export default {
     mounted() {
         window.addEventListener('scroll', this.headerScroll)
     },
-    destroy() {
+    destroyed() {
         window.removeEventListener('scroll', this.headerScroll)
     }
 };

@@ -93,7 +93,7 @@ for (let k = 1; k <= 32; k++) {
 
 
 
-    const showResultPage = function(searchResult) {
+    const showResultPage = function(searchResult) { // не сделал
 
         searchResult.flats.forEach((oneResultItem) => {
 
@@ -218,16 +218,16 @@ for (let k = 1; k <= 32; k++) {
         };
 
         // Инициализация формы расчета стоимости
-        const iniAnalyzeForm = () => {
+        const iniAnalyzeForm = () => { // c этим почти все
             searchControl.events.add('resultselect', searchResultParse);
             myMap.events.add('click', iniMarkerPosition);
             $('#search-form_error').hide();
             emptyMsg.hide();
-            clusterer ? myMap.geoObjects.remove(clusterer) : false;
+            clusterer ? myMap.geoObjects.remove(clusterer) : false; // непонятно зачем
         };
 
         // Обработка запроса поиска
-        const searchResultParse = (event) => {
+        const searchResultParse = (event) => { // сделал
             var index = event.get('index');
             searchControl.getResult(index).then(function (res) {
                 setMarkerPosition(res.geometry.getCoordinates());
@@ -297,6 +297,7 @@ for (let k = 1; k <= 32; k++) {
             const values = {};
             fields.each(function() {
                 const itemModel = $(this);
+                console.log(itemModel)
                 const itemType = itemModel.attr('type');
                 if (itemModel.attr('name')) {
                     switch (itemType) {
@@ -311,6 +312,7 @@ for (let k = 1; k <= 32; k++) {
                     }
                 }
             });
+            console.log(values)
             const convertedFormData = values;
             for (const k in convertedFormData) {
                 searchFormRequest[k] = convertedFormData[k];
@@ -354,36 +356,36 @@ for (let k = 1; k <= 32; k++) {
 
             $('#search-form_error').hide();
 
-            $.ajax({
-                url: '/api/mean/',
-                // url: 'static/test.json',
-                data: requestData
-            }).then((res) => {
-                searchResultsBlock.show().removeClass('in-progress');
-                $('#search-items-count').text(res['count']);
-                if (res['max_page'] === res['page']) {
-                    $('#show-more-button').hide();
-                } else {
-                    $('#show-more-button').show();
-                }
+            // $.ajax({
+            //     url: '/api/mean/',
+            //     // url: 'static/test.json',
+            //     data: requestData
+            // }).then((res) => {
+            //     searchResultsBlock.show().removeClass('in-progress');
+            //     $('#search-items-count').text(res['count']);
+            //     if (res['max_page'] === res['page']) {
+            //         $('#show-more-button').hide();
+            //     } else {
+            //         $('#show-more-button').show();
+            //     }
 
-                if (!notCreateData) {
-                    searchResult = res['flats'];
-                    iniShowMoreResults();
-                    // createNavigation(res['max_page']);
-                } else {
-                    searchResult = searchResult.concat(res['flats']);
-                }
+            //     if (!notCreateData) {
+            //         searchResult = res['flats'];
+            //         iniShowMoreResults();
+            //         // createNavigation(res['max_page']);
+            //     } else {
+            //         searchResult = searchResult.concat(res['flats']);
+            //     }
 
-                searchResultsBlock.removeClass('in-progress');
-                if (res.flats.length) {
-                    $('#visible-items-count').text(searchResult.length);
-                    createClusters(searchResult);
-                    showResultPage(res);
-                }
-            }, () => {
-                $('#search-form_error').show();
-            });
+            //     searchResultsBlock.removeClass('in-progress');
+            //     if (res.flats.length) {
+            //         $('#visible-items-count').text(searchResult.length);
+            //         createClusters(searchResult);
+            //         showResultPage(res);
+            //     }
+            // }, () => {
+            //     $('#search-form_error').show();
+            // });
         };
 
         const searchForm = $('#search-form').on('submit', (event) => {
