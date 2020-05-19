@@ -1,3 +1,4 @@
 .history
 dist/
 dist-versions/
+node_modules/
