@@ -11,7 +11,7 @@
         <div id="map"></div>
       </div>
     </div>
-    <calc-forms @set-coord="setCoord" :map="map" :clusterer="clusterer"></calc-forms>
+    <calc-forms @set-coord="setCoord" :map="map" :clusterer="clusterer" :calculateFormRequest="calculateFormRequest"></calc-forms>
   </div>
 </template>
 

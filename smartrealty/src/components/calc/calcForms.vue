@@ -431,12 +431,19 @@
 
 <script>
 import axios from "axios";
+import * as am4core from "@amcharts/amcharts4/core";
+import * as am4charts from "@amcharts/amcharts4/charts";
+import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+import testJson from '../../assets/test.json'
 export default {
   props: {
     map: {
       required: true,
     },
     clusterer: {
+      required: true,
+    },
+    calculateFormRequest: {
       required: true,
     },
   },
@@ -452,9 +459,14 @@ export default {
       resultItem: null,
       search_items_count: null,
       calculateForm: null,
-      calculateFormRequest: {},
       results: null,
-      emptyMsg: null
+      emptyMsg: null,
+      chartColorsList: [],
+      resultPrice: null,
+      resultDuration: null,
+      chartDiv: null,
+      chart: {},
+      visible_items_count: null
     };
   },
   methods: {
@@ -462,22 +474,19 @@ export default {
       this.sendCalculateForm();
     },
     sendCalculateForm() {
-      const fields = this.calculateForm.querySelectorAll(["input", "select"])
+      const fields = this.calculateForm.querySelectorAll(["input", "select"]);
       const values = {};
 
-      fields.forEach(itemModel => {
+      fields.forEach((itemModel) => {
         const itemType = itemModel.type;
         if (itemModel.name) {
           switch (itemType) {
             case "checkbox":
-              values[itemModel.name] = itemModel.checked
-                ? "1"
-                : "0";
+              values[itemModel.name] = itemModel.checked ? "1" : "0";
               console.log(values[itemModel.name], itemModel.value);
               break;
             case "radio":
-              if (itemModel.checked)
-                values[itemModel.name] = itemModel.value;
+              if (itemModel.checked) values[itemModel.name] = itemModel.value;
               console.log(itemModel.name, itemModel.value);
               break;
             default:
@@ -491,75 +500,73 @@ export default {
         this.calculateFormRequest[k] = values[k];
       }
 
-      this.results.classList.add('hide')
-      this.emptyMsg.classList.add('hide')
+      this.results.classList.add("hide");
+      this.emptyMsg.classList.add("hide");
 
-      this.loading_results.classList.add('show')
+      this.loading_results.classList.add("show");
 
-      console.log(this.calculateFormRequest)
+      axios
+        .get("/map", {
+          params: this.calculateFormRequest,
+        })
+        .then((res) => {
+          res = res.data;
+          console.log(res);
+          const chartData = [];
+          const allPeriod = res.PLot[res.PLot.length - 1]["x"];
+          let latestValue = res.PLot.shift();
 
-      // $.ajax({
-      //   url: "/map",
-      //   // url: 'static/plot-chart.json',
-      //   data: calculateFormRequest,
-      // }).then(
-      //   (res) => {
-      //     const chartData = [];
+          const stepColor = allPeriod / this.chartColorsList.length;
 
-      //     const allPeriod = res.PLot[res.PLot.length - 1]["x"];
-      //     let latestValue = res.PLot.shift();
+          const allColors = this.chartColorsList.map((item) => {
+            return item;
+          });
 
-      //     const stepColor = allPeriod / chartColorsList.length;
+          let linesColor = allColors.shift();
 
-      //     const allColors = chartColorsList.map((item) => {
-      //       return item;
-      //     });
+          for (let k = latestValue["x"]; k < allPeriod; k++) {
+            if (res.PLot[0].x === k) {
+              latestValue = res.PLot.shift();
+              if (latestValue["x"] / stepColor < res.PLot[0]["x"] / stepColor) {
+                linesColor = allColors.shift();
+              }
+            }
+            while (res.PLot[0].x <= k) {
+              res.PLot.shift();
+            }
+            console.log(latestValue);
+            if (latestValue["y"] !== 0) {
+              chartData.push({
+                x: k,
+                y: latestValue["y"],
+                lineColor: linesColor,
+              });
+            }
+          }
+          if (res.Price) {
+            this.resultPrice.textContent = res.Price.toLocaleString() + " руб.";
+            this.resultDuration.textContent = res.Duration
+              ? res.Duration + " дн."
+              : " - ";
+            this.results.classList.add("show");
+            this.loading_results.classList.remove("show");
+            this.loading_results.classList.add("hide");
+          } else {
+            this.results.classList.add("hide");
+          }
+          console.log(chartData, this.chart);
+          if (chartData.length) {
+            this.chartDiv.classList.add("show");
+            this.chart.data = chartData;
+            console.log(chartData, this.chart);
+          } else {
+            this.chartDiv.classList.remove("show");
+            this.chart.data = [];
 
-      //     let linesColor = allColors.shift();
-
-      //     for (let k = latestValue["x"]; k < allPeriod; k++) {
-      //       if (res.PLot[0].x === k) {
-      //         latestValue = res.PLot.shift();
-      //         if (latestValue["x"] / stepColor < res.PLot[0]["x"] / stepColor) {
-      //           linesColor = allColors.shift();
-      //         }
-      //       }
-      //       while (res.PLot[0].x <= k) {
-      //         res.PLot.shift();
-      //       }
-      //       if (latestValue["y"] !== 0) {
-      //         chartData.push({
-      //           x: k,
-      //           y: latestValue["y"],
-      //           lineColor: linesColor,
-      //         });
-      //       }
-      //     }
-
-      //     if (res.Price) {
-      //       resultPrice.text(res.Price.toLocaleString() + " руб.");
-      //       resultDuration.text(res.Duration ? res.Duration + " дн." : " - ");
-      //       results.show();
-      //       $("#loading_results").hide();
-      //     } else {
-      //       results.hide();
-      //     }
-
-      //     if (chartData.length) {
-      //       chartDiv.show();
-      //       chart.data = chartData;
-      //     } else {
-      //       chartDiv.hide();
-      //       chart.data = [];
-
-      //       emptyMsg.show();
-      //     }
-      //   },
-      //   () => {
-      //     emptyMsg.show();
-      //     results.hide();
-      //   }
-      // );
+            this.emptyMsg.classList.add("show");
+          }
+        })
+        .catch((e) => console.log(e));
     },
     submitSearch() {
       this.sendSearchForm();
@@ -580,14 +587,16 @@ export default {
       if (addData) {
         requestData = { ...requestData, ...addData };
       }
+      console.log(requestData)
       this.form_error.classList.add("hide");
-      console.log(requestData);
-      axios
-        .get("/api/mean/", {
-          params: requestData,
-        })
-        .then((res) => {
-          console.log(res);
+      // axios
+      //   .get("/api/mean/", {
+      //     params: requestData,
+      //   })
+      //   .then((res) => {
+          // res = res.data;
+          console.log(testJson)
+          let res = testJson
           searchResultsBlock.classList.add("show");
           searchResultsBlock.remove("in-progress");
           this.search_items_count.textContent = res["count"];
@@ -604,15 +613,12 @@ export default {
           }
           searchResultsBlock.classList.remove("in-progress");
           if (res.flats.length) {
-            const visible_items_count = document.querySelector(
-              "#visible-items-count"
-            );
-            visible_items_count.textContent = this.searchResult.length;
+            this.search_items_count.textContent = this.searchResult.length;
             this.createClusters(this.searchResult);
             this.showResultPage(res);
           }
-        })
-        .catch((e) => console.log(e));
+        // })
+        // .catch((e) => console.log(e));
     },
     showResultPage(searchResult) {
       searchResult.flats.forEach((oneResultItem) => {
@@ -781,7 +787,6 @@ export default {
     },
     changeNewHouse(e) {
       let blocks = document.querySelectorAll(".newhouse");
-      console.log(blocks);
       if (e.target.value == 1) {
         blocks[0].classList.remove("show");
         blocks[1].classList.remove("show-flex");
@@ -818,14 +823,72 @@ export default {
 
     this.form_error = document.querySelector("#search-form_error");
     this.searchForm = document.querySelector("#search-form");
-    this.calculateForm = document.querySelector("#calculate-form")
+    this.calculateForm = document.querySelector("#calculate-form");
     this.resultsBlock = document.querySelector("#visible-results");
     this.loading_results = document.querySelector("#loading_results");
     this.show_more_button = document.querySelector("#show-more-button");
     this.resultItem = document.querySelector("#result-item-tpl").innerHTML;
     this.search_items_count = document.querySelector("#search-items-count");
-    this.results = document.querySelector('#results')
-    this.emptyMsg = document.querySelector('#empty-msg')
+    this.results = document.querySelector("#results");
+    this.emptyMsg = document.querySelector("#empty-msg");
+    this.resultPrice = document.querySelector("#result_price");
+    this.resultDuration = document.querySelector("#result_duration");
+    this.chartDiv = document.querySelector("#chartdiv");
+            this.visible_items_count = document.querySelector(
+              "#visible-items-count"
+            );
+
+    for (let k = 1; k <= 32; k++) {
+      if (k <= 16) {
+        this.chartColorsList.push(
+          "rgb(" + (128 + k * 8 - 1) + ", " + (k * 16 - 1) + ", " + k * 3 + ")"
+        );
+      } else {
+        this.chartColorsList.push(
+          "rgb(" +
+            ((32 - k) * 16 - 1) +
+            ", " +
+            (128 + (32 - k) * 8 - 1) +
+            ", " +
+            k * 3 +
+            ")"
+        );
+      }
+    }
+
+    am4core.ready(() => {
+      am4core.useTheme(am4themes_animated);
+      this.chart = am4core.create("chartdiv", am4charts.XYChart);
+      var categoryAxis = this.chart.xAxes.push(new am4charts.CategoryAxis());
+      categoryAxis.renderer.grid.template.location = 0;
+      categoryAxis.renderer.ticks.template.disabled = true;
+      categoryAxis.renderer.line.opacity = 0;
+      categoryAxis.renderer.grid.template.disabled = true;
+      categoryAxis.renderer.minGridDistance = 50;
+      categoryAxis.dataFields.category = "x";
+      categoryAxis.startLocation = 0.1;
+      categoryAxis.endLocation = 0.6;
+
+      var valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+      valueAxis.tooltip.disabled = true;
+      valueAxis.renderer.line.opacity = 0;
+      valueAxis.renderer.ticks.template.disabled = true;
+      valueAxis.min = 0;
+
+      var lineSeries = this.chart.series.push(new am4charts.LineSeries());
+      lineSeries.dataFields.categoryX = "x";
+      lineSeries.dataFields.valueY = "y";
+      lineSeries.tooltipText = "Цена: {valueY.value} руб.";
+      lineSeries.fillOpacity = 0.8;
+      lineSeries.strokeWidth = 1;
+      lineSeries.propertyFields.stroke = "lineColor";
+      lineSeries.propertyFields.fill = "lineColor";
+
+      this.chart.cursor = new am4charts.XYCursor();
+      this.chart.cursor.behavior = "panX";
+      this.chart.cursor.lineX.opacity = 0;
+      this.chart.cursor.lineY.opacity = 0;
+    });
   },
   destroyed() {
     const inputsNewHouse = document.querySelectorAll("input[name='secondary']");

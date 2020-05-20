@@ -279,6 +279,9 @@ sup {
 }
 .calculate-form_checkbox-group {
     margin-top: 10px;
+    .calculate-form_checkbox + .calculate-form_checkbox {
+        margin-left: 0;
+    }
 }
 .calculate-form_checkbox {
     margin-bottom: 10px;
@@ -290,6 +293,9 @@ sup {
     display: block;
     cursor: pointer;
     vertical-align: middle;
+    & + & {
+        margin-left: 5px;
+    }
 }
 .calculate-form_radio {
     height: 52px;
@@ -1106,11 +1112,11 @@ template {
 }
 
 .hide {
-    display: none;
+    display: none !important;
 }
 .show-flex {
-    display: flex;
+    display: flex !important;
 }
 .show {
-    display: block;
+    display: block !important;
 }
