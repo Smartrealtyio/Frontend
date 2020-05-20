@@ -1,8 +1,8 @@
 module.exports = {
     devServer: {
         proxy: {
-            '^api/': {
-                target: 'https://smartrealty.ai/',
+            '^/api': {
+                target: 'https://smartrealty.ai',
                 changeOrigin: true
             }
         }
