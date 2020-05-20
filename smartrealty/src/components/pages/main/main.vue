@@ -133,15 +133,53 @@
         </div>
       </div>
     </section>
+    <template v-pre type="text/x-template" id="result-item-tpl">
+      <a data-link="href" class="results-list_item" target="_blank">
+        <div class="results-list_item_img">
+          <div
+            class="results-list_item_img_content"
+            data-image="background"
+          ></div>
+        </div>
+
+        <div class="results-list_item_desc">
+          <span class="results-list_item_desc_rooms">
+            <span data-full_sq="text"></span> м<sup>2</sup>,
+            <span data-rooms="text"></span>-комнатная
+          </span>
+          <span
+            class="results-list_item_desc_address"
+            data-address="text"
+          ></span>
+          <span class="results-list_item_desc_metro" data-metro_hidden="hidden">
+            <span data-metro="text"></span>,
+            <span data-time_to_metro="text"></span> мин
+          </span>
+        </div>
+
+        <div class="results-list_item_price">
+          <span class="results-list_item_price_full">
+            <span data-visible_price="text"></span> ₽
+          </span>
+          <span class="results-list_item_price_per">
+            <span data-visible_price_per_m="text"></span> ₽ за м<sup>2</sup>
+          </span>
+          <div
+            class="results-list_item_profit"
+            data-visible_profit="text"
+          ></div>
+        </div>
+      </a>
+    </template>
   </main>
 </template>
 
 <script>
-import calculateBlock from '../../calc/calcBlock'
+import calculateBlock from "../../calc/calcBlock";
 export default {
-    components: {
-        calculateBlock
-    }
+  components: {
+    calculateBlock,
+  },
 };
 </script>
 

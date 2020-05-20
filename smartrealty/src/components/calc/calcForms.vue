@@ -447,10 +447,120 @@ export default {
       resultsBlock: null,
       loading_results: null,
       searchFormRequest: {},
+      show_more_button: null,
+      searchResult: {},
+      resultItem: null,
+      search_items_count: null,
+      calculateForm: null,
+      calculateFormRequest: {},
+      results: null,
+      emptyMsg: null
     };
   },
   methods: {
-    submitCalculate() {},
+    submitCalculate() {
+      this.sendCalculateForm();
+    },
+    sendCalculateForm() {
+      const fields = this.calculateForm.querySelectorAll(["input", "select"])
+      const values = {};
+
+      fields.forEach(itemModel => {
+        const itemType = itemModel.type;
+        if (itemModel.name) {
+          switch (itemType) {
+            case "checkbox":
+              values[itemModel.name] = itemModel.checked
+                ? "1"
+                : "0";
+              console.log(values[itemModel.name], itemModel.value);
+              break;
+            case "radio":
+              if (itemModel.checked)
+                values[itemModel.name] = itemModel.value;
+              console.log(itemModel.name, itemModel.value);
+              break;
+            default:
+              values[itemModel.name] = itemModel.value || undefined;
+              console.log(values[itemModel.name], itemModel.value);
+          }
+        }
+      });
+
+      for (const k in values) {
+        this.calculateFormRequest[k] = values[k];
+      }
+
+      this.results.classList.add('hide')
+      this.emptyMsg.classList.add('hide')
+
+      this.loading_results.classList.add('show')
+
+      console.log(this.calculateFormRequest)
+
+      // $.ajax({
+      //   url: "/map",
+      //   // url: 'static/plot-chart.json',
+      //   data: calculateFormRequest,
+      // }).then(
+      //   (res) => {
+      //     const chartData = [];
+
+      //     const allPeriod = res.PLot[res.PLot.length - 1]["x"];
+      //     let latestValue = res.PLot.shift();
+
+      //     const stepColor = allPeriod / chartColorsList.length;
+
+      //     const allColors = chartColorsList.map((item) => {
+      //       return item;
+      //     });
+
+      //     let linesColor = allColors.shift();
+
+      //     for (let k = latestValue["x"]; k < allPeriod; k++) {
+      //       if (res.PLot[0].x === k) {
+      //         latestValue = res.PLot.shift();
+      //         if (latestValue["x"] / stepColor < res.PLot[0]["x"] / stepColor) {
+      //           linesColor = allColors.shift();
+      //         }
+      //       }
+      //       while (res.PLot[0].x <= k) {
+      //         res.PLot.shift();
+      //       }
+      //       if (latestValue["y"] !== 0) {
+      //         chartData.push({
+      //           x: k,
+      //           y: latestValue["y"],
+      //           lineColor: linesColor,
+      //         });
+      //       }
+      //     }
+
+      //     if (res.Price) {
+      //       resultPrice.text(res.Price.toLocaleString() + " руб.");
+      //       resultDuration.text(res.Duration ? res.Duration + " дн." : " - ");
+      //       results.show();
+      //       $("#loading_results").hide();
+      //     } else {
+      //       results.hide();
+      //     }
+
+      //     if (chartData.length) {
+      //       chartDiv.show();
+      //       chart.data = chartData;
+      //     } else {
+      //       chartDiv.hide();
+      //       chart.data = [];
+
+      //       emptyMsg.show();
+      //     }
+      //   },
+      //   () => {
+      //     emptyMsg.show();
+      //     results.hide();
+      //   }
+      // );
+    },
     submitSearch() {
       this.sendSearchForm();
     },
@@ -471,48 +581,170 @@ export default {
         requestData = { ...requestData, ...addData };
       }
       this.form_error.classList.add("hide");
-
       console.log(requestData);
-
       axios
-        .post("/api", {
-          data: requestData
+        .get("/api/mean/", {
+          params: requestData,
         })
-        .then((response) => console.log(response))
+        .then((res) => {
+          console.log(res);
+          searchResultsBlock.classList.add("show");
+          searchResultsBlock.remove("in-progress");
+          this.search_items_count.textContent = res["count"];
+          if (res["max_page"] === res["page"]) {
+            this.show_more_button.classList.add("hide");
+          } else {
+            this.show_more_button.classList.remove("hide");
+          }
+          if (!notCreateData) {
+            this.searchResult = res["flats"];
+            this.iniShowMoreResults();
+          } else {
+            this.searchResult = this.searchResult.concat(res["flats"]);
+          }
+          searchResultsBlock.classList.remove("in-progress");
+          if (res.flats.length) {
+            const visible_items_count = document.querySelector(
+              "#visible-items-count"
+            );
+            visible_items_count.textContent = this.searchResult.length;
+            this.createClusters(this.searchResult);
+            this.showResultPage(res);
+          }
+        })
         .catch((e) => console.log(e));
-      // $.ajax({
-      //   url: "/api/mean/",
-      //   // url: 'static/test.json',
-      //   data: requestData,
-      // }).then(
-      //   (res) => {
-      //     searchResultsBlock.show().removeClass("in-progress");
-      //     $("#search-items-count").text(res["count"]);
-      //     if (res["max_page"] === res["page"]) {
-      //       $("#show-more-button").hide();
-      //     } else {
-      //       $("#show-more-button").show();
-      //     }
+    },
+    showResultPage(searchResult) {
+      searchResult.flats.forEach((oneResultItem) => {
+        const resultItemElement = this.resultItem.clone();
+        oneResultItem.price_per_m = Math.round(
+          oneResultItem.price / oneResultItem.full_sq
+        );
 
-      //     if (!notCreateData) {
-      //       searchResult = res["flats"];
-      //       iniShowMoreResults();
-      //       // createNavigation(res['max_page']);
-      //     } else {
-      //       searchResult = searchResult.concat(res["flats"]);
-      //     }
+        if (oneResultItem.metros && oneResultItem.metros.length) {
+          oneResultItem.metro = oneResultItem.metros[0].station;
+          oneResultItem.time_to_metro = oneResultItem.metros[0].time_to_metro;
+        } else {
+          oneResultItem.metro = undefined;
+          oneResultItem.time_to_metro = undefined;
+          oneResultItem.metro_hidden = "true";
+        }
 
-      //     searchResultsBlock.removeClass("in-progress");
-      //     if (res.flats.length) {
-      //       $("#visible-items-count").text(searchResult.length);
-      //       createClusters(searchResult);
-      //       showResultPage(res);
-      //     }
-      //   },
-      //   () => {
-      //     $("#search-form_error").show();
-      //   }
-      // );
+        for (let param in oneResultItem) {
+          let visParam;
+          if (
+            param === "price" ||
+            param === "price_per_m" ||
+            param === "profit"
+          ) {
+            visParam = "visible_" + param;
+          } else {
+            visParam = param;
+          }
+          const valElement = resultItemElement.is("[data-" + visParam + "]")
+            ? resultItemElement
+            : resultItemElement.find("[data-" + visParam + "]");
+
+          if (valElement.length) {
+            if (param === "price" || param === "price_per_m") {
+              oneResultItem[visParam] = oneResultItem[param].toLocaleString();
+            }
+
+            if (param === "profit") {
+              oneResultItem[visParam] =
+                Math.max(Math.round(oneResultItem[param] * 10), 1) / 10 + "%";
+            }
+
+            switch (valElement.data(visParam)) {
+              case "text":
+                valElement.text(oneResultItem[visParam]);
+                break;
+              case "background":
+                valElement.css({
+                  backgroundImage: "url(" + oneResultItem[visParam] + ")",
+                });
+                break;
+              default:
+                valElement.attr(
+                  valElement.data(visParam),
+                  oneResultItem[visParam]
+                );
+            }
+          }
+        }
+        this.resultsBlock.append(resultItemElement);
+      });
+    },
+    createClusters(data) {
+      var customItemContentLayout = window[
+        "ymaps"
+      ].templateLayoutFactory.createClass(
+        "<h2 class=ballon_header>{{ properties.balloonContentHeader|raw }}</h2>" +
+          "<div class=ballon_body>{{ properties.balloonContentBody|raw }}</div>" +
+          "<div class=ballon_footer>{{ properties.balloonContentFooter|raw }}</div>"
+      );
+
+      this.clusterer = new window["ymaps"].Clusterer({
+        clusterIcons: [
+          {
+            href: "static/images/icons/pin_maps.svg",
+            size: [64, 64],
+            offset: [-32, -20],
+          },
+        ],
+        clusterDisableClickZoom: true,
+        clusterOpenBalloonOnClick: true,
+        clusterBalloonPanelMaxMapArea: 0,
+        clusterBalloonContentLayoutWidth: 500,
+        clusterBalloonItemContentLayout: customItemContentLayout,
+        clusterBalloonLeftColumnWidth: 220,
+      });
+
+      this.map.geoObjects.add(this.clusterer);
+
+      const placemarks = [];
+
+      for (let k in data) {
+        const resultItem = data[k];
+
+        const pm = new window["ymaps"].Placemark(
+          [resultItem.latitude, resultItem.longitude],
+          {
+            balloonContentHeader: data[k].address,
+            balloonContentBody:
+              data[k].price.toLocaleString() +
+              " ₽<br/>" +
+              '<a href="' +
+              data[k].link +
+              '" target="_blank">' +
+              data[k].link +
+              "</a>",
+            balloonContentFooter:
+              '<small style="color: #ddd">Smart Realty</small>',
+          },
+          {
+            iconLayout: "default#imageWithContent",
+            iconImageHref: "static/images/icons/pin_maps.svg",
+            iconImageSize: [56, 56],
+            iconImageOffset: [-28, -28],
+            iconContentOffset: [15, 15],
+          }
+        );
+
+        resultItem.placemark = pm;
+        placemarks.push(pm);
+      }
+
+      this.clusterer.add(placemarks);
+    },
+    iniShowMoreResults() {
+      let currentPage = 1;
+      this.show_more_button.addEventListener("click", () => {
+        currentPage++;
+        this.sendSearchForm(true, {
+          page: currentPage,
+        });
+      });
     },
     createSearchRequest() {
       const fields = this.searchForm.querySelectorAll(["input", "select"]);
@@ -586,8 +818,14 @@ export default {
 
     this.form_error = document.querySelector("#search-form_error");
     this.searchForm = document.querySelector("#search-form");
+    this.calculateForm = document.querySelector("#calculate-form")
     this.resultsBlock = document.querySelector("#visible-results");
     this.loading_results = document.querySelector("#loading_results");
+    this.show_more_button = document.querySelector("#show-more-button");
+    this.resultItem = document.querySelector("#result-item-tpl").innerHTML;
+    this.search_items_count = document.querySelector("#search-items-count");
+    this.results = document.querySelector('#results')
+    this.emptyMsg = document.querySelector('#empty-msg')
   },
   destroyed() {
     const inputsNewHouse = document.querySelectorAll("input[name='secondary']");
