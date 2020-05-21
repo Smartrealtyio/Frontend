@@ -30,20 +30,24 @@
         </div>
 
         <div class="about-offers">
-          <div class="about-offers_item" v-for="(item, i) in aboutCards" :key="i">
+          <div
+            class="about-offers_item"
+            v-for="(item, i) in aboutCards"
+            :key="i"
+          >
             <div class="about-offers_item_content">
               <div class="about-offers_item_img">
                 <img :src="item.img" />
               </div>
               <div class="about-offers_item_title">
-                {{item.head}}
+                {{ item.head }}
               </div>
               <div class="about-offers_item_desc">
-                {{item.text}}
+                {{ item.text }}
               </div>
             </div>
             <div class="about-offers_item_box">
-                {{item.subhead}}
+              {{ item.subhead }}
             </div>
           </div>
         </div>
@@ -57,50 +61,15 @@
       <div class="content-wrapper">
         <div class="main_section__team_title">Команда</div>
         <div class="team-list">
-          <div class="team-list_item">
+          <div class="team-list_item" v-for="(item, i) in teamData" :key="i">
             <div class="team-list_item_content">
               <div
                 class="team-list_item_ava"
-                style="background-image: url(static/images/team-5.jpg)"
+                :style="`background-image: url(${item.img})`"
               ></div>
-              <div class="team-list_item_name">Антон Ботвин</div>
-              <div class="team-list_item_position"></div>
-              <div class="team-list_item_description">
-                Основатель сервиса Новостройка.Rus. Выпускник Сколково. В
-                прошлом руководитель направления новостройки в
-                Яндекс.Недвижимость. Опыт в сфере интернет сервисов более 10
-                лет.
-              </div>
-            </div>
-          </div>
-
-          <div class="team-list_item">
-            <div class="team-list_item_content">
-              <div
-                class="team-list_item_ava"
-                style="background-image: url(static/images/team-7.jpg)"
-              ></div>
-              <div class="team-list_item_name">Татьяна Колоярова</div>
-              <div class="team-list_item_position"></div>
-              <div class="team-list_item_description">
-                Генеральный директор Агентство Недвижимости “Хочу Квартиру”
-              </div>
-            </div>
-          </div>
-
-          <div class="team-list_item">
-            <div class="team-list_item_content">
-              <div
-                class="team-list_item_ava"
-                style="background-image: url(static/images/team-1.png)"
-              ></div>
-              <div class="team-list_item_name">Владимир Тихомиров</div>
-              <div class="team-list_item_position"></div>
-              <div class="team-list_item_description">
-                Серийный предприниматель в области высоких технологий. Кандидат
-                технических наук, выпускник мат-меха СПбГУ. Основатель IT -
-                компаний DDG, Манзони, MyWish и ряда других.
-              </div>
+              <div class="team-list_item_name">{{item.name}}</div>
+              <div class="team-list_item_position">{{item.position}}</div>
+              <div class="team-list_item_description">{{item.text}}</div>
             </div>
           </div>
         </div>
@@ -116,29 +85,50 @@ export default {
     calculateBlock,
   },
   data() {
-      return {
-          aboutCards: [
-              {
-                  img: 'static/images/offer-1.svg',
-                  head: 'Продавцам',
-                  text: 'Укажите параметры квартиры и узнайте срок и стоимость продажи',
-                  subhead: 'Рассчитать цену квартиры'
-              },
-              {
-                  img: 'static/images/offer-2.svg',
-                  head: 'Застройщикам',
-                  text: 'Задайте квартирографию,  участок строительства иполучите график продажи квартир в реализуемом объекте',
-                  subhead: 'Рассчитать цену квартиры'
-              },
-              {
-                  img: 'static/images/offer-3.svg',
-                  head: 'Агентам',
-                  text: 'Найдите выгодные предложения для вас и ваших клиентов',
-                  subhead: 'Найти выгодные предложения'
-              }
-          ]
-      }
-  }
+    return {
+      aboutCards: [
+        {
+          img: "static/images/offer-1.svg",
+          head: "Продавцам",
+          text: "Укажите параметры квартиры и узнайте срок и стоимость продажи",
+          subhead: "Рассчитать цену квартиры",
+        },
+        {
+          img: "static/images/offer-2.svg",
+          head: "Застройщикам",
+          text:
+            "Задайте квартирографию,  участок строительства иполучите график продажи квартир в реализуемом объекте",
+          subhead: "Рассчитать цену квартиры",
+        },
+        {
+          img: "static/images/offer-3.svg",
+          head: "Агентам",
+          text: "Найдите выгодные предложения для вас и ваших клиентов",
+          subhead: "Найти выгодные предложения",
+        },
+      ],
+      teamData: [
+        {
+          img: 'static/images/team-1.png',
+          name: 'Владимир Тихомиров',
+          position: 'Генеральный директор и Основатель',
+          text: 'Как крипто-энтузиаст и предприниматель, Владимир имеет более 11 лет опыта работы в ИТ-бизнесе, в том числе бывший менеджер по продуктам в Motorola Solutions (в течение 7 лет). Владимир является одним из основателей DDG, центра разработки программного обеспечения с 50 сотрудниками. В дополнение к своему практическому опыту, он имеет докторскую степень в области компьютерных наук, объединяя все знания и опыт. Совсем недавно он основал MyWish Platform, ведущую платформу для создания смарт контрактов, поддерживаемую TRON, сообществом EOS, NEO, Waves и Binance.'
+        },
+        {
+          img: '/static/images/team-8.png',
+          name: 'Питер Лин',
+          position: 'Бывший директор R&D NEO',
+          text: 'Питер - бывший директор по исследованиям и разработкам NEO Global Development (NGD) и один из первых разработчиков NEO. Он имеет 8-летний опыт разработки интернет-технологий и 6-летний опыт работы в индустрии блокчейна. В течение этого времени он активно занимался развитием сетей консорциума и публичных сетей.'
+        },
+        {
+          img: 'static/images/team-9.png',
+          name: 'Эрик Бенц',
+          position: 'Генеральный директор Changelly',
+          text: 'Эрик имеет более чем 10-летний опыт работы в сфере финансовых технологий. Он установил инновационные системы SaaS для некоторых из крупнейших на сегодня учреждений, связанных с платежами, идентификацией и банковской инфраструктурой. Эрик работает в блокчейне с 2012 года и участвует в ряде проектов, связанных с блокчейном и финтехом, в качестве инвестора, директора и основателя совета директоров.'
+        },
+      ]
+    };
+  },
 };
 </script>
 
