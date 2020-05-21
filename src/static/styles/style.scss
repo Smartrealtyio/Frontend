@@ -134,7 +134,7 @@ sup {
   margin-bottom: 0.5em;
 }
 .main_section__home {
-  background: url(/static/images/woman.svg) calc(50% + 305px) calc(50% + 15px) no-repeat, url(/static/images/home-bg.svg) center center no-repeat;
+  background: url(/static/images/woman.svg) calc(50% + 305px) calc(50% + 15px) no-repeat, url(./assets/images/home.svg) center center no-repeat;
   background-size: auto, cover;
   padding: 160px 0;
 }
@@ -162,8 +162,8 @@ sup {
 .main_section__about {
   background: url(/static/images/offers-bg-flower.svg) calc(50% + 670px) 140px
       no-repeat,
-    url(/static/images/offers-bg.svg) left calc(50% - 150px) no-repeat;
-  padding: 50px 0;
+    url(/static/images/offers-bg.svg) left calc(50% - 150px) no-repeat, url(./assets/images/offers-bg-city.svg) left calc(100% - 10px) no-repeat, url(./assets/images/offers-bg-hove.svg) right calc(100% - 10px) no-repeat;
+  padding: 50px 0 145px;
 }
 .main_section__about_description {
   font-size: 18px;
@@ -194,7 +194,7 @@ sup {
   & + & {
     margin-left: 35px;
   }
-  &:hover {
+  &:hover, &.active {
     border: 3px solid #66bb6a;
   }
 }
@@ -231,7 +231,7 @@ sup {
 }
 
 .main_section__calculate {
-  padding: 85px 0;
+  padding: 0 0 85px;
   background-color: #fefeff;
 }
 .main_section__calculate_title {
@@ -514,11 +514,16 @@ sup {
   flex-wrap: wrap;
 }
 .team-list_item {
-  width: 33.333%;
+  width: fit-content;
   margin-bottom: 25px;
+  & + & {
+    margin-left: 150px;
+  }
+  &_icon {
+    margin: 10px 0 20px
+  }
 }
 .team-list_item_content {
-  margin-right: 15%;
   padding: 10px 0;
 }
 .team-list_item_ava {
@@ -548,6 +553,7 @@ sup {
   font-size: 13px;
   line-height: 19px;
   color: rgba(0, 0, 0, 0.55);
+  max-width: 280px;
 }
 
 .footer {

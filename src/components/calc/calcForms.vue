@@ -10,6 +10,7 @@
         укажите точку на карте
       </div>
       <div class="calculate-form_field">
+        <change-city :currentCity="currentCity" @change-city="changeCurrentCity"></change-city>
         <div class="calculate-form_field_label">
           Количество комнат
         </div>
@@ -192,26 +193,7 @@
         укажите точку на карте
       </div>
 
-      <div class="calculate-form_field">
-        <div class="calculate-form_field_control">
-          <div class="calculate-form_radios-group wide-group-2">
-            <label class="calculate-form_radio">
-              <input checked type="radio" name="city_id" value="0" required />
-              <span class="calculate-form_radio_mask"></span>
-              <span class="calculate-form_radio_text icon icon-msk"
-                >Москва</span
-              >
-            </label>
-            <label class="calculate-form_radio">
-              <input type="radio" name="city_id" value="1" required />
-              <span class="calculate-form_radio_mask"></span>
-              <span class="calculate-form_radio_text icon icon-spb"
-                >Санкт-Петербург</span
-              >
-            </label>
-          </div>
-        </div>
-      </div>
+      <change-city :currentCity="currentCity" @change-city="changeCurrentCity"></change-city>
 
       <div class="calculate-form_field">
         <div class="calculate-form_field_label">
@@ -435,6 +417,8 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import testJson from "../../assets/test.json";
+
+import changeCity from './changeCity'
 export default {
   props: {
     map: {
@@ -447,8 +431,12 @@ export default {
       required: true,
     },
   },
+  components: {
+    changeCity
+  },
   data() {
     return {
+      currentCity: 0,
       form_error: null,
       searchForm: null,
       resultsBlock: null,
@@ -477,6 +465,9 @@ export default {
     },
   },
   methods: {
+    changeCurrentCity(index) {
+      this.currentCity = index
+    },
     submitCalculate() {
       this.sendCalculateForm();
     },

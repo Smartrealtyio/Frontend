@@ -20,14 +20,6 @@
           class="novisible"
         />
 
-        <div class="form-type-setter">
-          <div class="form-type-setter_btn" id="analyze-init">
-            <label for="calc-price">Рассчитаем стоимость<br />квартиры</label>
-          </div>
-          <div class="form-type-setter_btn" id="search-init">
-            <label for="search-price">Найти выгодное<br />предложение</label>
-          </div>
-        </div>
         <!-- / Выбор формы -->
 
         <calc-content></calc-content>

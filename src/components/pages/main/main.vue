@@ -30,10 +30,14 @@
         </div>
 
         <div class="about-offers">
-          <div
+          <label
             class="about-offers_item"
+            :class="{'active': activeOfferCard === i}"
             v-for="(item, i) in aboutCards"
             :key="i"
+            :id="item.id"
+            :for="item.label"
+            @click="setActiveCard(i)"
           >
             <div class="about-offers_item_content">
               <div class="about-offers_item_img">
@@ -49,7 +53,7 @@
             <div class="about-offers_item_box">
               {{ item.subhead }}
             </div>
-          </div>
+          </label>
         </div>
       </div>
     </section>
@@ -69,6 +73,7 @@
               ></div>
               <div class="team-list_item_name">{{item.name}}</div>
               <div class="team-list_item_position">{{item.position}}</div>
+              <img src="../../../assets/images/icons/team-icon.svg" alt="" class="team-list_item_icon">
               <div class="team-list_item_description">{{item.text}}</div>
             </div>
           </div>
@@ -84,14 +89,22 @@ export default {
   components: {
     calculateBlock,
   },
+  methods: {
+    setActiveCard(index) {
+      this.activeOfferCard = index
+    }
+  },
   data() {
     return {
+      activeOfferCard: 0,
       aboutCards: [
         {
           img: "static/images/offer-1.svg",
           head: "Продавцам",
           text: "Укажите параметры квартиры и узнайте срок и стоимость продажи",
           subhead: "Рассчитать цену квартиры",
+          id: 'analyze-init',
+          label: 'calc-price'
         },
         {
           img: "static/images/offer-2.svg",
@@ -105,6 +118,8 @@ export default {
           head: "Агентам",
           text: "Найдите выгодные предложения для вас и ваших клиентов",
           subhead: "Найти выгодные предложения",
+          id: 'search-init',
+          label: 'search-price'
         },
       ],
       teamData: [
@@ -115,13 +130,13 @@ export default {
           text: 'Как крипто-энтузиаст и предприниматель, Владимир имеет более 11 лет опыта работы в ИТ-бизнесе, в том числе бывший менеджер по продуктам в Motorola Solutions (в течение 7 лет). Владимир является одним из основателей DDG, центра разработки программного обеспечения с 50 сотрудниками. В дополнение к своему практическому опыту, он имеет докторскую степень в области компьютерных наук, объединяя все знания и опыт. Совсем недавно он основал MyWish Platform, ведущую платформу для создания смарт контрактов, поддерживаемую TRON, сообществом EOS, NEO, Waves и Binance.'
         },
         {
-          img: '/static/images/team-8.png',
+          img: require('@/assets/images/team-8.png'),
           name: 'Питер Лин',
           position: 'Бывший директор R&D NEO',
           text: 'Питер - бывший директор по исследованиям и разработкам NEO Global Development (NGD) и один из первых разработчиков NEO. Он имеет 8-летний опыт разработки интернет-технологий и 6-летний опыт работы в индустрии блокчейна. В течение этого времени он активно занимался развитием сетей консорциума и публичных сетей.'
         },
         {
-          img: 'static/images/team-9.png',
+          img: require('@/assets/images/team-9.png'),
           name: 'Эрик Бенц',
           position: 'Генеральный директор Changelly',
           text: 'Эрик имеет более чем 10-летний опыт работы в сфере финансовых технологий. Он установил инновационные системы SaaS для некоторых из крупнейших на сегодня учреждений, связанных с платежами, идентификацией и банковской инфраструктурой. Эрик работает в блокчейне с 2012 года и участвует в ряде проектов, связанных с блокчейном и финтехом, в качестве инвестора, директора и основателя совета директоров.'
