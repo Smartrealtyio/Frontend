@@ -73,7 +73,7 @@
               ></div>
               <div class="team-list_item_name">{{item.name}}</div>
               <div class="team-list_item_position">{{item.position}}</div>
-              <img src="../../../assets/images/icons/team-icon.svg" alt="" class="team-list_item_icon">
+              <img :src="require('@/assets/images/icons/team-icon.svg')" alt="" class="team-list_item_icon">
               <div class="team-list_item_description">{{item.text}}</div>
             </div>
           </div>
@@ -112,6 +112,8 @@ export default {
           text:
             "Задайте квартирографию,  участок строительства иполучите график продажи квартир в реализуемом объекте",
           subhead: "Рассчитать цену квартиры",
+          id: 'build-init',
+          label: 'for-build'
         },
         {
           img: "static/images/offer-3.svg",

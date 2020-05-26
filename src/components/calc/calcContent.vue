@@ -7,6 +7,9 @@
       <div class="calculate-form_map_label" data-analyze-map-title>
         Укажите точку на карте
       </div>
+      <div class="calculate-form__steps calculate-form__steps--build">
+        Укажите точку на карте:
+      </div>
       <div class="calculate-form_map_container" id="realty-map">
         <div id="map"></div>
       </div>
@@ -18,85 +21,43 @@
       :clusterer="clusterer"
       :calculateFormRequest="calculateFormRequest"
     ></calc-forms>
-    <!-- Результаты поиска выгодных предложений -->
-    <div class="calculate-form_error" id="search-form_error">
-      <span
-        >Предложений не найдено. Пожалуйста, измените масштаб карты или
-        настройки фильтра.</span
-      >
-    </div>
-    <div
-      class="calculate-form_map"
-      id="results-list-block"
-    >
-      <div class="results-list" v-show="resData.length">
-        <a id="results-list" style="position: relative; top: -80px;"></a>
-        <div class="main_section__team_title">
-          <!--<span id="visible-items-count"></span> из-->
-          Найдено <span id="search-items-count">{{resData.length}}</span> предложений
+    <build-form :markCoord="markCoord"></build-form>
+    <search-results :searchData="resData"></search-results>
+    <div class="calculate-form_result" id="results" style="display: none;">
+      <div class="calculate-form_result_item">
+        <div class="calculate-form_result_item_title">
+          Рекомендованная цена
         </div>
-        <div id="visible-results">
-          <a data-link="href" class="results-list_item" target="_blank" v-for="(item, i) in resData" :key="i" :href="item.link">
-            <div class="results-list_item_img">
-              <div
-                class="results-list_item_img_content"
-                data-image="background"
-                :style="`background-image: url(${item.image})`"
-              ></div>
-            </div>
+        <div class="calculate-form_result_item_value" id="result_price"></div>
+      </div>
+      <div class="calculate-form_result_item">
+        <div class="calculate-form_result_item_title">
+          Среднее время продажи
+        </div>
+        <div
+          class="calculate-form_result_item_value"
+          id="result_duration"
+        ></div>
+      </div>
 
-            <div class="results-list_item_desc">
-              <span class="results-list_item_desc_rooms">
-                <span data-full_sq="text">{{item.full_sq}}</span> м<sup>2</sup>,
-                <span data-rooms="text"></span>-комнатная
-              </span>
-              <span
-                class="results-list_item_desc_address"
-                data-address="text"
-              >{{item.address}}</span>
-              <span
-                class="results-list_item_desc_metro"
-                data-metro_hidden="hidden"
-              >
-                <span data-metro="text">{{item.metro}}</span>,
-                <span data-time_to_metro="text">{{item.time_to_metro }}</span> мин
-              </span>
-            </div>
+      <div id="chartdiv" style="height: 400px; width: 100%;"></div>
 
-            <div class="results-list_item_price">
-              <span class="results-list_item_price_full">
-                <span data-visible_price="text">{{item.visible_price}}</span> ₽
-              </span>
-              <span class="results-list_item_price_per">
-                <span data-visible_price_per_m="text">{{item.visible_price_per_m}}</span> ₽ за м<sup>2</sup>
-              </span>
-              <div
-                class="results-list_item_profit"
-                data-visible_profit="text"
-              >{{item.visible_profit}}</div>
-            </div>
-          </a>
-        </div>
-        <div class="show-more">
-          <button class="show-more_btn" id="show-more-button">
-            Показать ещё
-          </button>
-        </div>
+      <div class="calculate-form_error" id="empty-msg">
+        <span>Недостаточно данных</span>
       </div>
     </div>
-    <div
-      class="calculate-form_loading"
-      id="loading_results"
-      style="display: none;"
-    ></div>
   </div>
 </template>
 
 <script>
 import calcForms from "./calcForms";
+import buildForm from "./buildForm";
+import searchResults from "./searchResults";
 export default {
   components: {
     calcForms,
+    searchResults,
+    buildForm
   },
   data() {
     return {
@@ -109,6 +70,7 @@ export default {
       analyzeBtn: null,
       searchBtn: null,
       results: null,
+      addressValue: "",
       addressString: null,
       addressStringField: null,
       calculate_form_lat: null,
@@ -116,6 +78,11 @@ export default {
       calculateFormRequest: {},
       clusterer: null,
       resData: [],
+      buildBtn: null,
+      markCoord: {
+        lat: 0,
+        lng: 0
+      }
     };
   },
   methods: {
@@ -124,7 +91,7 @@ export default {
       this.map.setCenter(coord);
     },
     setResults(res) {
-      this.resData = res
+      this.resData = res;
     },
     initMap() {
       this.map = new window["ymaps"].Map("map", {
@@ -135,14 +102,27 @@ export default {
       this.searchControl = this.map.controls.get("searchControl");
       this.iniAnalyzeForm();
     },
+    iniBuildForm() {
+      this.removeCoordAndEvents();
+      this.results.classList.remove('show')
+      this.searchControl.events.add("resultselect", this.searchResultParse);
+      this.map.events.add("click", this.iniMarkerPosition);
+      this.form_error.classList.add("hide");
+      this.emptyMsg.classList.add("hide");
+    },
     iniAnalyzeForm() {
+      this.removeCoordAndEvents();
       this.searchControl.events.add("resultselect", this.searchResultParse);
       this.map.events.add("click", this.iniMarkerPosition);
       this.form_error.classList.add("hide");
       this.emptyMsg.classList.add("hide");
       this.clusterer ? this.map.geoObjects.remove(this.clusterer) : false;
     },
-    iniSearchForm() {
+    removeCoordAndEvents() {
+      setTimeout(() => {
+        this.map.container.fitToViewport();
+      }, 0);
+      this.addressValue = "";
       this.map.events.remove("click", this.iniMarkerPosition);
       this.searchControl.events.remove("resultselect", this.searchResultParse);
       this.map.geoObjects.remove(this.placemark);
@@ -157,6 +137,10 @@ export default {
       this.addressString.innerHTML =
         '<span class="grey-text">Не указано</span>';
       this.addressStringField.value = "";
+    },
+    iniSearchForm() {
+      this.results.classList.remove('show')
+      this.removeCoordAndEvents();
       this.clusterer ? this.map.geoObjects.add(this.clusterer) : this.clusterer;
     },
     searchResultParse(event) {
@@ -184,11 +168,15 @@ export default {
       window["ymaps"].geocode(coo).then(function(res) {
         var firstGeoObject = res.geoObjects.get(0);
         const address = firstGeoObject.getAddressLine();
+        self.calculateFormRequest.addressString = address;
         self.addressString.textContent = address;
         self.addressStringField.value = address;
       });
 
       this.placemark.geometry.setCoordinates(coo);
+      console.log(coo[0], coo[1])
+      this.markCoord.lat = coo[0]
+      this.markCoord.lng = coo[1]
       this.calculate_form_lat.value = coo[0];
       this.calculate_form_lng.value = coo[1];
       this.checkMetroDuration();
@@ -289,6 +277,9 @@ export default {
 
     this.searchBtn = document.querySelector("#search-init");
     this.searchBtn.addEventListener("click", this.iniSearchForm);
+
+    this.buildBtn = document.querySelector("#build-init");
+    this.buildBtn.addEventListener("click", this.iniBuildForm);
 
     this.results = document.querySelector("#results");
   },

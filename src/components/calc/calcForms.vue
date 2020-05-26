@@ -11,6 +11,8 @@
       </div>
       <div class="calculate-form_field">
         <change-city :currentCity="currentCity" @change-city="changeCurrentCity"></change-city>
+      </div>
+      <div class="calculate-form_field">
         <div class="calculate-form_field_label">
           Количество комнат
         </div>
@@ -532,7 +534,6 @@ export default {
             while (res.PLot[0].x <= k) {
               res.PLot.shift();
             }
-            console.log(latestValue);
             if (latestValue["y"] !== 0) {
               chartData.push({
                 x: k,
@@ -552,11 +553,9 @@ export default {
           } else {
             this.results.classList.add("hide");
           }
-          console.log(chartData, this.chart);
           if (chartData.length) {
             this.chartDiv.classList.add("show");
             this.chart.data = chartData;
-            console.log(chartData, this.chart);
           } else {
             this.chartDiv.classList.remove("show");
             this.chart.data = [];
@@ -582,11 +581,10 @@ export default {
         this.createSearchRequest();
       }
 
-      let requestData = { ...this.searchFormRequest };
-      if (addData) {
-        requestData = { ...requestData, ...addData };
-      }
-      console.log(requestData);
+      // let requestData = { ...this.searchFormRequest };
+      // if (addData) {
+      //   requestData = { ...requestData, ...addData };
+      // }
       this.form_error.classList.add("hide");
       // axios
       //   .get("/api/mean/", {
@@ -594,8 +592,8 @@ export default {
       //   })
       //   .then((res) => {
       // res = res.data;
-      console.log(testJson);
       let res = testJson;
+        console.log(testJson, addData)
       // searchResultsBlock.classList.add("show");
       // searchResultsBlock.remove("in-progress");
       if (res["max_page"] === res["page"]) {
@@ -633,7 +631,6 @@ export default {
           oneResultItem.time_to_metro = undefined;
           oneResultItem.metro_hidden = "true";
         }
-        console.log(oneResultItem);
         for (let param in oneResultItem) {
           let visParam;
           if (
@@ -673,7 +670,6 @@ export default {
           // }
         }
         // this.resultsBlock.append(resultItemElement);
-        console.log(resultItemObj)
         this.resultsData.push(resultItemObj);
       });
       this.$emit('set-res', this.resultsData)

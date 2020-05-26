@@ -19,37 +19,16 @@
           id="search-price"
           class="novisible"
         />
-
-        <!-- / Выбор формы -->
+        <input
+          type="radio"
+          name="form-type"
+          value="for-build"
+          id="for-build"
+          class="novisible"
+        />
 
         <calc-content></calc-content>
 
-        <div class="calculate-form_result" id="results" style="display: none;">
-          <div class="calculate-form_result_item">
-            <div class="calculate-form_result_item_title">
-              Рекомендованная цена
-            </div>
-            <div
-              class="calculate-form_result_item_value"
-              id="result_price"
-            ></div>
-          </div>
-          <div class="calculate-form_result_item">
-            <div class="calculate-form_result_item_title">
-              Среднее время продажи
-            </div>
-            <div
-              class="calculate-form_result_item_value"
-              id="result_duration"
-            ></div>
-          </div>
-
-          <div id="chartdiv" style="height: 400px; width: 100%;"></div>
-
-          <div class="calculate-form_error" id="empty-msg">
-            <span>Недостаточно данных</span>
-          </div>
-        </div>
       </div>
     </section>
   </div>
@@ -60,8 +39,7 @@ import calcContent from "./calcContent";
 export default {
   components: {
     calcContent,
-  },
-  methods: {},
+  }
 };
 </script>
 

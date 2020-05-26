@@ -134,7 +134,9 @@ sup {
   margin-bottom: 0.5em;
 }
 .main_section__home {
-  background: url(/static/images/woman.svg) calc(50% + 305px) calc(50% + 15px) no-repeat, url(./assets/images/home.svg) center center no-repeat;
+  background: url(/static/images/woman.svg) calc(50% + 305px) calc(50% + 15px)
+      no-repeat,
+    url(./assets/images/home.svg) center center no-repeat;
   background-size: auto, cover;
   padding: 160px 0;
 }
@@ -162,7 +164,9 @@ sup {
 .main_section__about {
   background: url(/static/images/offers-bg-flower.svg) calc(50% + 670px) 140px
       no-repeat,
-    url(/static/images/offers-bg.svg) left calc(50% - 150px) no-repeat, url(./assets/images/offers-bg-city.svg) left calc(100% - 10px) no-repeat, url(./assets/images/offers-bg-hove.svg) right calc(100% - 10px) no-repeat;
+    url(/static/images/offers-bg.svg) left calc(50% - 150px) no-repeat,
+    url(./assets/images/offers-bg-city.svg) left calc(100% - 10px) no-repeat,
+    url(./assets/images/offers-bg-hove.svg) right calc(100% - 10px) no-repeat;
   padding: 50px 0 145px;
 }
 .main_section__about_description {
@@ -194,7 +198,8 @@ sup {
   & + & {
     margin-left: 35px;
   }
-  &:hover, &.active {
+  &:hover,
+  &.active {
     border: 3px solid #66bb6a;
   }
 }
@@ -211,7 +216,7 @@ sup {
   line-height: 32px;
   text-align: center;
   font-weight: bold;
-  color: #66bb6a
+  color: #66bb6a;
 }
 .about-offers_item_img {
   margin: 11px auto;
@@ -241,6 +246,32 @@ sup {
 }
 .calculate-form {
   position: relative;
+  counter-reset: step;
+  flex-direction: column;
+  &__steps {
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 32px;
+    display: flex;
+    margin-bottom: 15px;
+    align-items: center;
+    &::before {
+      counter-increment: step;                 /* Инкрементирует счетчик*/
+      content: counter(step);
+      width: 52px;
+      height: 52px;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 24px;
+      background: #66BB6A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 18px;
+      border-radius: 50%;
+      color: white
+    }
+  }
 }
 
 .calculate-form_error {
@@ -273,7 +304,7 @@ sup {
 .calculate-form_field_control input,
 .calculate-form_field_control select {
   background: #ffffff;
-  border: 2px solid rgba(134, 147, 188, 0.6);
+  border: 1px solid #c2c9dd;
   border-radius: 2px;
   height: 52px;
   width: calc(80% - 45px);
@@ -326,7 +357,7 @@ sup {
 }
 .calculate-form_checkbox_mask {
   background: #ffffff;
-  border: 2px solid rgba(134, 147, 188, 0.6);
+  border: 1px solid #c2c9dd;
   border-radius: 2px;
   display: inline-block;
   vertical-align: middle;
@@ -337,7 +368,7 @@ sup {
 }
 .calculate-form_radio_mask {
   background: #ffffff;
-  border: 2px solid rgba(134, 147, 188, 0.6);
+  border: 1px solid #c2c9dd;
   border-radius: 2px;
   top: 0;
   left: 0;
@@ -351,6 +382,7 @@ sup {
   padding: 13px;
   line-height: 26px;
   font-size: 16px;
+  font-weight: 700;
   position: relative;
   z-index: 2;
   display: block;
@@ -520,7 +552,7 @@ sup {
     margin-left: 150px;
   }
   &_icon {
-    margin: 10px 0 20px
+    margin: 10px 0 20px;
   }
 }
 .team-list_item_content {
@@ -710,13 +742,32 @@ sup {
 
 [value="search-price"]:checked ~ .calculate-form #calculate-form,
 [value="search-price"]:checked ~ .calculate-form [data-analyze-map-title],
+[value="search-price"]:checked ~ .calculate-form .calculate-form__steps--build,
+[value="search-price"]:checked ~ .calculate-form .calculate-form_result,
+[value="search-price"]:checked ~ .calculate-form .b-res,
 [value="search-price"]:checked ~ #results {
+  display: none;
+}
+[value="for-build"]:checked ~ .calculate-form #calculate-form,
+[value="for-build"]:checked ~ .calculate-form [data-analyze-map-title],
+[value="for-build"]:checked ~ .calculate-form .calculate-form_result,
+[value="for-build"]:checked ~ #results {
   display: none;
 }
 
 [value="calc-price"]:checked ~ .calculate-form #search-form,
+[value="calc-price"]:checked ~ .calculate-form .calculate-form__steps--build,
+[value="calc-price"]:checked ~ .calculate-form .b-res,
 [value="calc-price"]:checked ~ .calculate-form [data-search-map-title] {
   display: none;
+}
+[value="for-build"]:checked ~ .calculate-form #search-form,
+[value="for-build"]:checked ~ .calculate-form [data-search-map-title] {
+  display: none;
+}
+
+[value="for-build"]:checked ~ .calculate-form {
+  display: flex;
 }
 
 [value="search-price"]:checked ~ .calculate-form_result {
@@ -726,6 +777,10 @@ sup {
 [value="calc-price"]:checked ~ .calculate-form #results-list-block,
 [value="calc-price"]:checked ~ .calculate-form #search-form_error {
   display: none !important;
+}
+
+[value="for-build"]:checked ~ .calculate-form .calculate-form_map {
+  width: 100%;
 }
 
 .form-type-setter_btn {
@@ -757,13 +812,15 @@ sup {
 .results-list_item {
   border-radius: 5px;
   border: 2px solid #f5f5f5;
-  padding: 12px 30px;
+  padding: 15px 35px;
   display: table;
   width: 100%;
-  margin-bottom: 18px;
   text-decoration: none;
   transition: all linear 0.1s;
   box-sizing: border-box;
+  & + & {
+    margin-top: 20px;
+  }
 }
 .results-list_item:hover {
   border-color: #67bc6b;
@@ -777,18 +834,18 @@ sup {
   display: table-cell;
   vertical-align: middle;
   position: relative;
-  padding-top: 50px;
-  padding-left: 40px;
+  padding: 60px 0;
 }
 .results-list_item_price_full {
   color: #212121;
-  font-size: 20px;
+  font-size: 24px;
+  line-height: 24px;
   display: block;
 }
 .results-list_item_price_per {
   color: #67bc6b;
   display: block;
-  margin-top: 5px;
+  margin-top: 15px;
   font-size: 14px;
 }
 .results-list_item_img {
@@ -798,8 +855,8 @@ sup {
 }
 
 .results-list_item_img_content {
-  width: 80px;
-  height: 80px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background-color: #f3f3f3;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -821,8 +878,8 @@ sup {
 }
 .results-list_item_desc_address {
   display: block;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin: 13px 0;
+  max-width: 330px;
 }
 .results-list_item_desc_metro {
   color: #99a1a4;
@@ -898,6 +955,11 @@ template {
   justify-content: center;
   line-height: 14px;
   font-size: 14px;
+  font-weight: 700;
+  padding: 13px 0;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
 .icon:before {
@@ -918,9 +980,31 @@ template {
 .icon-spb:before {
   background-image: url(/static/images/icons/icon-spb.svg);
 }
+.icon-msk-active:before {
+  background-image: url(/static/images/icons/icon-msk-active.svg);
+}
+
+.icon-spb-active:before {
+  background-image: url(/static/images/icons/icon-spb-active.svg);
+}
 
 .calculate-form_radio input[name="city"]:checked ~ .icon-msk:before {
   background-image: url(/static/images/icons/icon-msk-active.svg);
+}
+
+.icon-spb-active,
+.icon-msk-active {
+  &::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+    display: block;
+    background: #67bc6b;
+    position: absolute;
+    transform: rotate(45deg) translateX(-50%);
+    top: 100%;
+    left: 50%;
+  }
 }
 
 .calculate-form_radio input[name="city"]:checked ~ .icon-spb:before {
