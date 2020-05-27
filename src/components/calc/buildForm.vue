@@ -1,5 +1,6 @@
 <template>
   <form class="b-res" @submit.prevent="submitForm">
+    <!-- <input type="text" class="b-res__input-map" required> -->
     <div class="b-res__container">
       <div class="b-res__house">
         <div class="calculate-form__steps calculate-form__steps--build">
@@ -35,7 +36,7 @@
               <input
                 type="text"
                 v-mask="'##.##.####'"
-                v-model="result.start_timestamp"
+                v-model="start_time"
                 class="b-res__house-input-date"
               />
               <img
@@ -45,7 +46,7 @@
               <input
                 type="text"
                 v-mask="'##.##.####'"
-                v-model="result.end_timestamp"
+                v-model="end_time"
                 class="b-res__house-input-date"
               />
             </span>
@@ -217,8 +218,8 @@
       </div>
       <button class="b-res__send">Рассчитать</button>
     </div>
-    <div id="firtGraph" style="height: 400px; width: 100%;"></div>
-    <div id="secondGraph" style="height: 400px; width: 100%;"></div>
+    <div id="firtGraph" style="height: 400px; width: 100%;" v-show="dataReady"></div>
+    <div id="secondGraph" style="height: 400px; width: 100%;" v-show="dataReady"></div>
   </form>
 </template>
 
@@ -226,6 +227,7 @@
 import axios from "axios";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
+import am4chartsLeng from "@amcharts/amcharts4/lang/ru_RU.js";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 export default {
   props: {
@@ -241,13 +243,16 @@ export default {
   },
   data() {
     return {
+      dataReady: false,
       chart1: null,
       chart2: null,
       currentId: 1,
+      start_time: "01.01.2020",
+      end_time: "01.01.2020",
       result: {
         housing_class: 0,
-        start_timestamp: "01.01.2020",
-        end_timestamp: "01.01.2025",
+        start_timestamp: 0,
+        end_timestamp: 0,
         floors_count: 9,
         parking: false,
         elevator: false,
@@ -255,9 +260,9 @@ export default {
           {
             type: 1,
             rooms: 0,
-            full_sq: 0,
-            life_sq: 0,
-            kitchen_sq: 0,
+            full_sq: 15,
+            life_sq: 5,
+            kitchen_sq: 5,
             renovation_type: 1,
             windows_view: 0,
             flats_count: 1,
@@ -342,9 +347,9 @@ export default {
   methods: {
     submitForm() {
       this.result.start_timestamp =
-        new Date(this.result.start_timestamp).getTime() / 1000;
+        new Date(this.start_time).getTime() / 1000;
       this.result.end_timestamp =
-        new Date(this.result.end_timestamp).getTime() / 1000;
+        new Date(this.end_time).getTime() / 1000;
       this.result.longitude = this.markCoord.lng;
       this.result.latitude = this.markCoord.lat;
       this.result.city_id = this.currentCity;
@@ -354,6 +359,8 @@ export default {
         .post("/api/builder/", this.result)
         .then((result) => {
           console.log(result);
+          this.dataReady = true
+
           this.chart1.data = result.data.first_graphic;
           this.chart2.data = result.data.second_graphic
         })
@@ -387,9 +394,9 @@ export default {
       const emptyType = {
         type: this.currentId,
         rooms: 0,
-        full_sq: 0,
-        life_sq: 0,
-        kitchen_sq: 0,
+        full_sq: 15,
+        life_sq: 5,
+        kitchen_sq: 5,
         renovation_type: 1,
         windows_view: 0,
         flats_count: 1,
@@ -425,7 +432,7 @@ export default {
       categoryAxis.dataFields.category = "month_announce";
       categoryAxis.renderer.grid.template.location = 0;
       categoryAxis.renderer.minGridDistance = 1;
-      categoryAxis.renderer.cellStartLocation = 0.3;
+      categoryAxis.renderer.cellStartLocation = 0.2;
       categoryAxis.renderer.cellEndLocation = 0.8;
 
       let valueAxis = this.chart1.yAxes.push(new am4charts.ValueAxis());
@@ -454,30 +461,9 @@ export default {
       this.chart1.legend = new am4charts.Legend();
 
       this.chart2 = am4core.create("secondGraph", am4charts.XYChart);
+      this.chart2.language.locale = am4chartsLeng
+
       this.chart2.dateFormatter.inputDateFormat = "yyyy-MM-dd"
-      // const objMonths = {
-      //   1: 'янв',
-      //   2: 'фев',
-      //   3: 'мар',
-      //   4: 'апр',
-      //   5: 'май',
-      //   6: 'июн',
-      //   7: 'июл',
-      //   8: 'авг',
-      //   9: 'сен',
-      //   10: 'окт',
-      //   11: 'ноя',
-      //   12: 'дек'
-      // }
-
-      // this.chart2.data.forEach(element => {
-      //   element['1_month'] = objMonths[element['1_month']]
-      //   element['2_month'] = objMonths[element['2_month']]
-      //   element['3_month'] = objMonths[element['3_month']]
-      //   element['4_month'] = objMonths[element['4_month']]
-      //   element['s_month'] = objMonths[element['s_month']]
-      // });
-
       // Create category axis
       var categoryAxis2 = this.chart2.xAxes.push(new am4charts.DateAxis());
       categoryAxis2.skipEmptyPeriods = true
@@ -496,10 +482,11 @@ export default {
         categoryAxis2.dataFields.category = field + "_month";
         series.dataFields.valueY = field + "_price";
         series.dataFields.dateX = "date"
+        // series.dataFields.tooltipYField = field;
         // series1.name = field;
         series.strokeWidth = 3;
         series.bullets.push(new am4charts.CircleBullet());
-        // series.tooltipText = "Place taken by {name} in {categoryX}: {valueY}";
+        series.tooltipText = `${obj[field]}: ` + "{valueY}";
         series.legendSettings.valueText = "{valueY}";
         series.visible = false;
       }
