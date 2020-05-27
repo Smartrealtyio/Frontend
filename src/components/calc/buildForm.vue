@@ -1,6 +1,11 @@
 <template>
   <form class="b-res" @submit.prevent="submitForm">
-    <!-- <input type="text" class="b-res__input-map" required> -->
+    <input
+      type="text"
+      class="b-res__input-map"
+      v-model="markCoord.lng"
+      required
+    />
     <div class="b-res__container">
       <div class="b-res__house">
         <div class="calculate-form__steps calculate-form__steps--build">
@@ -131,7 +136,7 @@
               class="b-res__table-input-box b-res__table-select"
               v-model.number="itemRow.rooms"
             >
-              <option value="0">Студия</option>
+              <option value="s">Студия</option>
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -218,8 +223,17 @@
       </div>
       <button class="b-res__send">Рассчитать</button>
     </div>
-    <div id="firtGraph" style="height: 400px; width: 100%;" v-show="dataReady"></div>
-    <div id="secondGraph" style="height: 400px; width: 100%;" v-show="dataReady"></div>
+    <div
+      id="firtGraph"
+      style="height: 400px; width: 100%;"
+      v-show="dataReady"
+    ></div>
+    <div
+      id="secondGraph"
+      style="height: 400px; width: 100%;"
+      v-show="dataReady"
+    ></div>
+    <div id="thirdGraph" style="height: 400px; width: 100%;"></div>
   </form>
 </template>
 
@@ -259,7 +273,7 @@ export default {
         flats: [
           {
             type: 1,
-            rooms: 0,
+            rooms: "s",
             full_sq: 15,
             life_sq: 5,
             kitchen_sq: 5,
@@ -346,10 +360,8 @@ export default {
   },
   methods: {
     submitForm() {
-      this.result.start_timestamp =
-        new Date(this.start_time).getTime() / 1000;
-      this.result.end_timestamp =
-        new Date(this.end_time).getTime() / 1000;
+      this.result.start_timestamp = new Date(this.start_time).getTime() / 1000;
+      this.result.end_timestamp = new Date(this.end_time).getTime() / 1000;
       this.result.longitude = this.markCoord.lng;
       this.result.latitude = this.markCoord.lat;
       this.result.city_id = this.currentCity;
@@ -359,10 +371,10 @@ export default {
         .post("/api/builder/", this.result)
         .then((result) => {
           console.log(result);
-          this.dataReady = true
+          this.dataReady = true;
 
           this.chart1.data = result.data.first_graphic;
-          this.chart2.data = result.data.second_graphic
+          this.chart2.data = result.data.second_graphic;
         })
         .catch((e) => {
           console.log(e);
@@ -393,7 +405,7 @@ export default {
       this.currentId = this.currentId + 1;
       const emptyType = {
         type: this.currentId,
-        rooms: 0,
+        rooms: "s",
         full_sq: 15,
         life_sq: 5,
         kitchen_sq: 5,
@@ -409,15 +421,15 @@ export default {
     const self = this;
     const obj = {
       s: "Студия",
-      "s_color": '#66BB6A',
+      s_color: "#66BB6A",
       "1": "1 ком",
-      "1_color": '#8181D7',
+      "1_color": "#8181D7",
       "2": "2 ком",
-      "2_color": '#1CA9E5',
+      "2_color": "#1CA9E5",
       "3": "3 ком",
-      "3_color": '#17CFC7',
+      "3_color": "#17CFC7",
       "4": "4 ком",
-      "4_color": '#6F38D3',
+      "4_color": "#6F38D3",
     };
 
     am4core.ready(() => {
@@ -426,6 +438,7 @@ export default {
 
       // Create chart instance
       this.chart1 = am4core.create("firtGraph", am4charts.XYChart);
+      // this.chart1.numberFormatter.numberFormat = "#'млн'";
 
       // Create axes
       let categoryAxis = this.chart1.xAxes.push(new am4charts.CategoryAxis());
@@ -444,7 +457,7 @@ export default {
         series.dataFields.valueY = "revenue_" + field;
         series.dataFields.categoryX = "month_announce";
         series.dataFields.tooltipYField = field;
-        series.columns.template.fill = am4core.color(obj[field + '_color'])
+        series.columns.template.fill = am4core.color(obj[field + "_color"]);
         series.name = name;
         series.columns.template.tooltipText =
           `${obj[field]}: ` + "{tooltipYField}";
@@ -461,12 +474,12 @@ export default {
       this.chart1.legend = new am4charts.Legend();
 
       this.chart2 = am4core.create("secondGraph", am4charts.XYChart);
-      this.chart2.language.locale = am4chartsLeng
+      this.chart2.language.locale = am4chartsLeng;
 
-      this.chart2.dateFormatter.inputDateFormat = "yyyy-MM-dd"
+      this.chart2.dateFormatter.inputDateFormat = "yyyy-MM-dd";
       // Create category axis
       var categoryAxis2 = this.chart2.xAxes.push(new am4charts.DateAxis());
-      categoryAxis2.skipEmptyPeriods = true
+      categoryAxis2.skipEmptyPeriods = true;
       categoryAxis2.renderer.grid.template.location = 0;
       categoryAxis2.renderer.minGridDistance = 10;
       categoryAxis2.renderer.cellStartLocation = 0.2;
@@ -481,7 +494,7 @@ export default {
         let series = self.chart2.series.push(new am4charts.LineSeries());
         categoryAxis2.dataFields.category = field + "_month";
         series.dataFields.valueY = field + "_price";
-        series.dataFields.dateX = "date"
+        series.dataFields.dateX = "date";
         // series.dataFields.tooltipYField = field;
         // series1.name = field;
         series.strokeWidth = 3;
@@ -502,6 +515,62 @@ export default {
 
       // Add legend
       this.chart2.legend = new am4charts.Legend();
+
+      var chart3 = am4core.create("thirdGraph", am4charts.XYChart);
+      chart3.language.locale = am4chartsLeng;
+
+      // Add percent sign to all numbers
+      // chart3.numberFormatter.numberFormat = "#.#'%'";
+
+      chart3.dateFormatter.inputDateFormat = "yyyy-MM-dd";
+      // Add data
+      chart3.data = [
+        {
+          "1_all": 3000,
+          "1_sold": 110,
+          "2_all": 5000,
+          "2_sold": 220,
+          date: "2019.11.01",
+        },
+        {
+          "1_all": 1000,
+          "1_sold": 110,
+          "2_all": 2000,
+          "2_sold": 220,
+          date: "2019.12.01",
+        },
+      ];
+
+      // Create axes
+      var categoryAxis3 = chart3.xAxes.push(new am4charts.DateAxis());
+      categoryAxis3.renderer.grid.template.location = 0;
+      categoryAxis3.renderer.minGridDistance = 30;
+
+      var valueAxis3 = chart3.yAxes.push(new am4charts.ValueAxis());
+      valueAxis3.title.fontWeight = 800;
+
+      // Create series
+
+      function createSeries3(field) {
+        var series = chart3.series.push(new am4charts.ColumnSeries());
+        series.dataFields.valueY = field + "_all";
+        series.dataFields.dateX = "date";
+        series.clustered = true;
+        // series.tooltipText = "GDP grow in {categoryX} (2004): [bold]{valueY}[/]";
+
+        var series2 = chart3.series.push(new am4charts.ColumnSeries());
+        series2.dataFields.valueY = field + "_sold";
+        series2.dataFields.dateX = "date";
+        series2.clustered = true;
+        series2.columns.template.width = am4core.percent(50);
+        // series2.tooltipText = "GDP grow in {categoryX} (2005): [bold]{valueY}[/]";
+      }
+      createSeries3('1')
+      createSeries3('2')
+
+      chart3.cursor = new am4charts.XYCursor();
+      chart3.cursor.lineX.disabled = true;
+      chart3.cursor.lineY.disabled = true;
     });
   },
 };
@@ -521,6 +590,16 @@ select {
 }
 .b-res {
   margin-top: 50px;
+  position: relative;
+  &__input-map {
+    position: absolute;
+    top: -50px;
+    height: 0;
+    cursor: default;
+    opacity: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
   &__send {
     border: none;
     background: #66bb6a;

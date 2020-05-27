@@ -81,8 +81,8 @@ export default {
       resData: [],
       buildBtn: null,
       markCoord: {
-        lat: 0,
-        lng: 0
+        lat: null,
+        lng: null
       },
       currentCity: 0,
       time_to_metro: null
@@ -167,6 +167,8 @@ export default {
           {},
           {
             preset: "islands#redIcon",
+            iconImageHref: require('@/assets/images/icons/marker.svg'),
+            iconImageSize: [30, 42]
           }
         );
         this.map.geoObjects.add(this.placemark);
