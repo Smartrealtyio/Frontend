@@ -469,6 +469,7 @@ export default {
   methods: {
     changeCurrentCity(index) {
       this.currentCity = index
+      this.$emit('set-current-city', index)
     },
     submitCalculate() {
       this.sendCalculateForm();

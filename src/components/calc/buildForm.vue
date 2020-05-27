@@ -36,7 +36,6 @@
                 type="text"
                 v-mask="'##.##.####'"
                 v-model="result.start_timestamp"
-                placeholder="01.01.2020"
                 class="b-res__house-input-date"
               />
               <img
@@ -48,7 +47,6 @@
                 v-mask="'##.##.####'"
                 v-model="result.end_timestamp"
                 class="b-res__house-input-date"
-                placeholder="01.01.2022"
               />
             </span>
           </div>
@@ -127,12 +125,12 @@
               :value="`тип ${itemRow.type}`"
             />
             <select
-              name="rooms_count"
+              name="rooms"
               id=""
               class="b-res__table-input-box b-res__table-select"
-              v-model.number="itemRow.rooms_count"
+              v-model.number="itemRow.rooms"
             >
-              <option value="-1">Студия</option>
+              <option value="0">Студия</option>
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -163,7 +161,7 @@
               <span class="b-res__table-input-field">м<sup>2</sup></span>
             </div>
             <select
-              name="rooms_count"
+              name="rooms"
               id=""
               class="b-res__table-input-box b-res__table-select"
               v-model.number="itemRow.renovation_type"
@@ -175,7 +173,7 @@
               <option value="3">Дизайнерский</option>
             </select>
             <select
-              name="rooms_count"
+              name="rooms"
               id=""
               class="b-res__table-input-box b-res__table-select"
               v-model.number="itemRow.windows_view"
@@ -193,21 +191,21 @@
             <input
               type="number"
               class="b-res__table-input-box"
-              v-model="itemRow.sq_price"
+              v-model="itemRow.price_meter_sq"
             />
           </div>
           <div class="b-res__table-box">
             <div
               class="b-res__table-btn b-res__table-btn--double"
               @click="setOneMoreRow"
-              v-show="this.result.flats_types.length"
+              v-show="this.result.flats.length"
             >
               Дублировать
             </div>
             <div
               class="b-res__table-btn b-res__table-btn--delete"
               @click="deleteLastRow"
-              v-show="this.result.flats_types.length"
+              v-show="this.result.flats.length"
             >
               <img
                 :src="require('@/assets/images/icons/cross-table.svg')"
@@ -219,7 +217,8 @@
       </div>
       <button class="b-res__send">Рассчитать</button>
     </div>
-    <div id="test" style="height: 400px; width: 100%;"></div>
+    <div id="firtGraph" style="height: 400px; width: 100%;"></div>
+    <div id="secondGraph" style="height: 400px; width: 100%;"></div>
   </form>
 </template>
 
@@ -233,28 +232,36 @@ export default {
     markCoord: {
       type: Object,
     },
+    currentCity: {
+      require: true,
+    },
+    timeToMetro: {
+      require: true,
+    },
   },
   data() {
     return {
+      chart1: null,
+      chart2: null,
       currentId: 1,
       result: {
         housing_class: 0,
-        start_timestamp: "",
-        end_timestamp: "",
+        start_timestamp: "01.01.2020",
+        end_timestamp: "01.01.2025",
         floors_count: 9,
         parking: false,
         elevator: false,
-        flats_types: [
+        flats: [
           {
             type: 1,
-            rooms_count: -1,
+            rooms: 0,
             full_sq: 0,
             life_sq: 0,
             kitchen_sq: 0,
             renovation_type: 1,
             windows_view: 0,
             flats_count: 1,
-            sq_price: 300,
+            price_meter_sq: 300,
           },
         ],
       },
@@ -266,7 +273,7 @@ export default {
         },
         {
           text: "Комнат",
-          cat: "rooms_count",
+          cat: "rooms",
         },
         {
           text: "Общая",
@@ -295,7 +302,7 @@ export default {
         {
           text:
             "<span>Стоимость <span>м<sup>2</sup></span> в <br/> первый месяц</span>",
-          cat: "sq_price",
+          cat: "price_meter_sq",
         },
       ],
       houseData: [
@@ -324,9 +331,9 @@ export default {
   },
   computed: {
     sortRows() {
-      let flats = [...this.result.flats_types];
+      let flats = [...this.result.flats];
       return this.currentCat === null
-        ? this.result.flats_types
+        ? this.result.flats
         : flats.sort((item1, item2) => {
             return item2[this.currentCat] - item1[this.currentCat];
           });
@@ -339,31 +346,34 @@ export default {
       this.result.end_timestamp =
         new Date(this.result.end_timestamp).getTime() / 1000;
       this.result.longitude = this.markCoord.lng;
-      this.result.latitube = this.markCoord.lat;
+      this.result.latitude = this.markCoord.lat;
+      this.result.city_id = this.currentCity;
+      this.result.time_to_metro = this.timeToMetro;
 
-      console.log(this.result);
-
-      axios.post("/api/builder/", {
-        params: this.result,
-      }).then((result) => {
-        console.log(result)
-      }).catch((e) => {
-        console.log(e)
-      })
+      axios
+        .post("/api/builder/", this.result)
+        .then((result) => {
+          console.log(result);
+          this.chart1.data = result.data.first_graphic;
+          this.chart2.data = result.data.second_graphic
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     },
     setOneMoreRow() {
       this.currentId = this.currentId + 1;
 
       const lastRowCopy = {
-        ...this.result.flats_types[this.result.flats_types.length - 1],
+        ...this.result.flats[this.result.flats.length - 1],
       };
       lastRowCopy.type = this.currentId;
 
-      this.result.flats_types.push(lastRowCopy);
+      this.result.flats.push(lastRowCopy);
     },
     deleteLastRow() {
-      this.currentId = this.result.flats_types.length - 1;
-      this.result.flats_types.pop();
+      this.currentId = this.result.flats.length - 1;
+      this.result.flats.pop();
     },
     onTalbeHeadClick(cat) {
       if (cat === this.currentCat) {
@@ -376,75 +386,135 @@ export default {
       this.currentId = this.currentId + 1;
       const emptyType = {
         type: this.currentId,
-        rooms_count: -1,
+        rooms: 0,
         full_sq: 0,
         life_sq: 0,
         kitchen_sq: 0,
         renovation_type: 1,
         windows_view: 0,
         flats_count: 1,
-        sq_price: 300,
+        price_meter_sq: 300,
       };
-      this.result.flats_types.push(emptyType);
+      this.result.flats.push(emptyType);
     },
   },
   mounted() {
+    const self = this;
+    const obj = {
+      s: "Студия",
+      "s_color": '#66BB6A',
+      "1": "1 ком",
+      "1_color": '#8181D7',
+      "2": "2 ком",
+      "2_color": '#1CA9E5',
+      "3": "3 ком",
+      "3_color": '#17CFC7',
+      "4": "4 ком",
+      "4_color": '#6F38D3',
+    };
+
     am4core.ready(() => {
       am4core.useTheme(am4themes_animated);
       // Themes end
 
       // Create chart instance
-      let chart = am4core.create("test", am4charts.XYChart);
-
-      // Add data
-      chart.data = [
-        {
-          year: '1',
-          europe_count: 12312,
-          europe: 111111111,
-          namerica_count: 24,
-          namerica: 222222222,
-        },
-        {
-          year: '2',
-          europe_count: 123,
-          europe: 232438230,
-          namerica_count: 245356,
-          namerica: 123123123,
-        }
-      ];
+      this.chart1 = am4core.create("firtGraph", am4charts.XYChart);
 
       // Create axes
-      let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-      categoryAxis.dataFields.category = "year";
+      let categoryAxis = this.chart1.xAxes.push(new am4charts.CategoryAxis());
+      categoryAxis.dataFields.category = "month_announce";
       categoryAxis.renderer.grid.template.location = 0;
-      categoryAxis.renderer.minGridDistance = 20;
-      categoryAxis.renderer.cellStartLocation = 0.2;
-      categoryAxis.renderer.cellEndLocation = 0.7;
+      categoryAxis.renderer.minGridDistance = 1;
+      categoryAxis.renderer.cellStartLocation = 0.3;
+      categoryAxis.renderer.cellEndLocation = 0.8;
 
-      let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+      let valueAxis = this.chart1.yAxes.push(new am4charts.ValueAxis());
       valueAxis.min = 0;
 
       // Create series
       function createSeries(field, name) {
-        let series = chart.series.push(new am4charts.ColumnSeries());
-        series.dataFields.valueY = field;
-        series.dataFields.categoryX = "year";
+        let series = self.chart1.series.push(new am4charts.ColumnSeries());
+        series.dataFields.valueY = "revenue_" + field;
+        series.dataFields.categoryX = "month_announce";
+        series.dataFields.tooltipYField = field;
+        series.columns.template.fill = am4core.color(obj[field + '_color'])
         series.name = name;
-        // series.columns.template.tooltipText = "{name}: [bold]{valueY}[/]";
-        series.columns.template.tooltipText = field + '_count';
+        series.columns.template.tooltipText =
+          `${obj[field]}: ` + "{tooltipYField}";
         series.stacked = true;
-        series.columns.template.width = am4core.percent(95);
+        // series.columns.template.width = am4core.percent(95);
       }
 
-      // createSeries("europe", "Europe", true);
-      // createSeries("namerica", "North America", true);
+      createSeries("s", "Студия");
+      createSeries("1", "1 ком");
+      createSeries("2", "2 ком");
+      createSeries("3", "3 ком");
+      createSeries("4", "4 ком");
 
-        createSeries('europe', 'europe')
-        createSeries('namerica', 'namerica')
+      this.chart1.legend = new am4charts.Legend();
+
+      this.chart2 = am4core.create("secondGraph", am4charts.XYChart);
+      this.chart2.dateFormatter.inputDateFormat = "yyyy-MM-dd"
+      // const objMonths = {
+      //   1: 'янв',
+      //   2: 'фев',
+      //   3: 'мар',
+      //   4: 'апр',
+      //   5: 'май',
+      //   6: 'июн',
+      //   7: 'июл',
+      //   8: 'авг',
+      //   9: 'сен',
+      //   10: 'окт',
+      //   11: 'ноя',
+      //   12: 'дек'
+      // }
+
+      // this.chart2.data.forEach(element => {
+      //   element['1_month'] = objMonths[element['1_month']]
+      //   element['2_month'] = objMonths[element['2_month']]
+      //   element['3_month'] = objMonths[element['3_month']]
+      //   element['4_month'] = objMonths[element['4_month']]
+      //   element['s_month'] = objMonths[element['s_month']]
+      // });
+
+      // Create category axis
+      var categoryAxis2 = this.chart2.xAxes.push(new am4charts.DateAxis());
+      categoryAxis2.skipEmptyPeriods = true
+      categoryAxis2.renderer.grid.template.location = 0;
+      categoryAxis2.renderer.minGridDistance = 10;
+      categoryAxis2.renderer.cellStartLocation = 0.2;
+      categoryAxis2.renderer.cellEndLocation = 0.1;
+
+      // Create value axis
+      var valueAxis2 = this.chart2.yAxes.push(new am4charts.ValueAxis());
+      valueAxis2.renderer.minLabelPosition = 0.01;
+
+      // Create series
+      function createSeries2(field) {
+        let series = self.chart2.series.push(new am4charts.LineSeries());
+        categoryAxis2.dataFields.category = field + "_month";
+        series.dataFields.valueY = field + "_price";
+        series.dataFields.dateX = "date"
+        // series1.name = field;
+        series.strokeWidth = 3;
+        series.bullets.push(new am4charts.CircleBullet());
+        // series.tooltipText = "Place taken by {name} in {categoryX}: {valueY}";
+        series.legendSettings.valueText = "{valueY}";
+        series.visible = false;
+      }
+      createSeries2("s", "Студия");
+      createSeries2("1", "1 ком");
+      createSeries2("2", "2 ком");
+      createSeries2("3", "3 ком");
+      createSeries2("4", "4 ком");
+
+      // Add chart cursor
+      this.chart2.cursor = new am4charts.XYCursor();
+      // chart2.cursor.behavior = "zoomY";
 
       // Add legend
-      chart.legend = new am4charts.Legend();
+      this.chart2.legend = new am4charts.Legend();
     });
   },
 };

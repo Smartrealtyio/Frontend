@@ -17,11 +17,12 @@
     <calc-forms
       @set-coord="setCoord"
       @set-res="setResults"
+      @set-current-city="setCurCity"
       :map="map"
       :clusterer="clusterer"
       :calculateFormRequest="calculateFormRequest"
     ></calc-forms>
-    <build-form :markCoord="markCoord"></build-form>
+    <build-form :markCoord="markCoord" :currentCity="currentCity" :timeToMetro="time_to_metro"></build-form>
     <search-results :searchData="resData"></search-results>
     <div class="calculate-form_result" id="results" style="display: none;">
       <div class="calculate-form_result_item">
@@ -82,10 +83,15 @@ export default {
       markCoord: {
         lat: 0,
         lng: 0
-      }
+      },
+      currentCity: 0,
+      time_to_metro: null
     };
   },
   methods: {
+    setCurCity(index) {
+      this.currentCity = index
+    },
     setCoord(coord) {
       this.coord = coord;
       this.map.setCenter(coord);
@@ -174,7 +180,6 @@ export default {
       });
 
       this.placemark.geometry.setCoordinates(coo);
-      console.log(coo[0], coo[1])
       this.markCoord.lat = coo[0]
       this.markCoord.lng = coo[1]
       this.calculate_form_lat.value = coo[0];
@@ -195,6 +200,7 @@ export default {
           this.calculateFormRequest.time_to_metro = Math.round(
             routes[0].properties.get("duration").value / 60
           );
+          this.time_to_metro = this.calculateFormRequest.time_to_metro
         });
       });
     },
