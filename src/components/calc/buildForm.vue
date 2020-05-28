@@ -233,7 +233,11 @@
       style="height: 400px; width: 100%;"
       v-show="dataReady"
     ></div>
-    <div id="thirdGraph" style="height: 400px; width: 100%;"></div>
+    <div
+      id="thirdGraph"
+      style="height: 400px; width: 100%;"
+      v-show="dataReady"
+    ></div>
   </form>
 </template>
 
@@ -260,9 +264,10 @@ export default {
       dataReady: false,
       chart1: null,
       chart2: null,
+      chart3: null,
       currentId: 1,
       start_time: "01.01.2020",
-      end_time: "01.01.2020",
+      end_time: "01.12.2020",
       result: {
         housing_class: 0,
         start_timestamp: 0,
@@ -360,8 +365,10 @@ export default {
   },
   methods: {
     submitForm() {
-      this.result.start_timestamp = new Date(this.start_time).getTime() / 1000;
-      this.result.end_timestamp = new Date(this.end_time).getTime() / 1000;
+      
+      this.dataReady = false;
+      this.result.start_timestamp = Math.round(new Date(this.start_time).getTime() / 1000);
+      this.result.end_timestamp = Math.round(new Date(this.end_time).getTime() / 1000);
       this.result.longitude = this.markCoord.lng;
       this.result.latitude = this.markCoord.lat;
       this.result.city_id = this.currentCity;
@@ -375,6 +382,7 @@ export default {
 
           this.chart1.data = result.data.first_graphic;
           this.chart2.data = result.data.second_graphic;
+          this.chart3.data = result.data.third_graphic;
         })
         .catch((e) => {
           console.log(e);
@@ -438,17 +446,18 @@ export default {
 
       // Create chart instance
       this.chart1 = am4core.create("firtGraph", am4charts.XYChart);
-      // this.chart1.numberFormatter.numberFormat = "#'млн'";
-
+      this.chart1.dateFormatter.inputDateFormat = "MM";
       // Create axes
       let categoryAxis = this.chart1.xAxes.push(new am4charts.CategoryAxis());
-      categoryAxis.dataFields.category = "month_announce";
+      categoryAxis.dataFields.category = "month_graphic";
       categoryAxis.renderer.grid.template.location = 0;
       categoryAxis.renderer.minGridDistance = 1;
       categoryAxis.renderer.cellStartLocation = 0.2;
       categoryAxis.renderer.cellEndLocation = 0.8;
 
       let valueAxis = this.chart1.yAxes.push(new am4charts.ValueAxis());
+      valueAxis.numberFormatter = new am4core.NumberFormatter();
+      valueAxis.numberFormatter.numberFormat = "# ' млн'";
       valueAxis.min = 0;
 
       // Create series
@@ -516,61 +525,67 @@ export default {
       // Add legend
       this.chart2.legend = new am4charts.Legend();
 
-      var chart3 = am4core.create("thirdGraph", am4charts.XYChart);
-      chart3.language.locale = am4chartsLeng;
+      this.chart3 = am4core.create("thirdGraph", am4charts.XYChart);
+      this.chart3.language.locale = am4chartsLeng;
 
       // Add percent sign to all numbers
       // chart3.numberFormatter.numberFormat = "#.#'%'";
 
-      chart3.dateFormatter.inputDateFormat = "yyyy-MM-dd";
+      this.chart3.dateFormatter.inputDateFormat = "yyyy-MM-dd";
       // Add data
-      chart3.data = [
-        {
-          "1_all": 3000,
-          "1_sold": 110,
-          "2_all": 5000,
-          "2_sold": 220,
-          date: "2019.11.01",
-        },
-        {
-          "1_all": 1000,
-          "1_sold": 110,
-          "2_all": 2000,
-          "2_sold": 220,
-          date: "2019.12.01",
-        },
-      ];
+      const obj3 = {
+        s_opacity: "#E0F1E1",
+        s_color: "#66BB6A",
+        "1_opacity": "#E7E7F7",
+        "1_color": "#8181D7",
+        "2_opacity": "#D2EEFA",
+        "2_color": "#1CA9E5",
+        "3_opacity": "#D1F5F4",
+        "3_color": "#17CFC7",
+        "4_opacity": "#E2D7F6",
+        "4_color": "#6F38D3",
+      };
 
       // Create axes
-      var categoryAxis3 = chart3.xAxes.push(new am4charts.DateAxis());
-      categoryAxis3.renderer.grid.template.location = 0;
-      categoryAxis3.renderer.minGridDistance = 30;
+      var categoryAxis3 = this.chart3.xAxes.push(new am4charts.DateAxis());
+      false;
+      categoryAxis3.skipEmptyPeriods = true;
+      categoryAxis3.renderer.minGridDistance = 60;
 
-      var valueAxis3 = chart3.yAxes.push(new am4charts.ValueAxis());
+      var valueAxis3 = this.chart3.yAxes.push(new am4charts.ValueAxis());
       valueAxis3.title.fontWeight = 800;
 
       // Create series
 
       function createSeries3(field) {
-        var series = chart3.series.push(new am4charts.ColumnSeries());
+        var series = self.chart3.series.push(new am4charts.ColumnSeries());
         series.dataFields.valueY = field + "_all";
         series.dataFields.dateX = "date";
-        series.clustered = true;
-        // series.tooltipText = "GDP grow in {categoryX} (2004): [bold]{valueY}[/]";
+        series.clustered = false;
+        series.strokeWidth = 0;
+        series.dataFields.tooltipYField = field + "_all";
+        series.columns.template.fill = am4core.color(obj3[field + "_opacity"]);
+        series.tooltipText = `${obj[field]} осталось: ` + "[bold]{valueY}[/]";
 
-        var series2 = chart3.series.push(new am4charts.ColumnSeries());
+        var series2 = self.chart3.series.push(new am4charts.ColumnSeries());
         series2.dataFields.valueY = field + "_sold";
         series2.dataFields.dateX = "date";
-        series2.clustered = true;
+        series2.clustered = false;
+        series2.strokeWidth = 0;
+        series2.dataFields.tooltipYField = field + "_sold";
+        series2.columns.template.fill = am4core.color(obj3[field + "_color"]);
         series2.columns.template.width = am4core.percent(50);
-        // series2.tooltipText = "GDP grow in {categoryX} (2005): [bold]{valueY}[/]";
+        series2.tooltipText = `${obj[field]} продано: ` + "[bold]{valueY}[/]";
       }
-      createSeries3('1')
-      createSeries3('2')
+      createSeries3("s");
+      createSeries3("1");
+      createSeries3("2");
+      createSeries3("3");
+      createSeries3("4");
 
-      chart3.cursor = new am4charts.XYCursor();
-      chart3.cursor.lineX.disabled = true;
-      chart3.cursor.lineY.disabled = true;
+      this.chart3.cursor = new am4charts.XYCursor();
+      this.chart3.cursor.lineX.disabled = true;
+      this.chart3.cursor.lineY.disabled = true;
     });
   },
 };

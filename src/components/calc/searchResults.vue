@@ -17,13 +17,25 @@
         </div>
         <div class="calculate-form__sort">
           <div class="calculate-form__sort-head">Сортировать:</div>
+          <div
+            class="calculate-form__sort-btn"
+            v-for="(item, i) in sortData"
+            :key="i"
+            :class="{ active: item.cat === currentCat }"
+            @click="onClickSortBtn(item.cat)"
+          >
+            <span>{{ item.text }}</span>
+            <div class="calculate-form__sort-btn-cloud" v-if="item.cloud">
+              {{item.cloud}}
+            </div>
+          </div>
         </div>
         <div id="visible-results">
           <a
             data-link="href"
             class="results-list_item"
             target="_blank"
-            v-for="(item, i) in searchData"
+            v-for="(item, i) in filtredData"
             :key="i"
             :href="item.link"
           >
@@ -68,7 +80,7 @@
                 ₽ за м<sup>2</sup>
               </span>
               <div class="results-list_item_profit" data-visible_profit="text">
-                {{ item.visible_profit }}
+                {{ item.visible_profit + '%' }}
               </div>
             </div>
           </a>
@@ -100,16 +112,31 @@ export default {
   },
   data() {
     return {
+      currentCat: "visible_price",
       sortData: [
         {
-          text: 'по цене',
-          cat: 'visible_price'
+          text: "по цене",
+          cat: "visible_price",
         },
         {
-          text: 'по выгодности %',
-          cat: 'visible_ profit'
-        }
-      ]
+          text: "по выгодности %",
+          cat: "visible_ profit",
+          cloud: '% выгодности предложения относительно среднерыночной стоимости'
+        },
+      ],
+    };
+  },
+  computed: {
+    filtredData() {
+      const flats = [...this.searchData]
+      return flats.sort((elem1, elem2) => {
+        return +(elem1[this.currentCat].split(' ').join('')) - +(elem2[this.currentCat].split(' ').join(''))
+      })
+    }
+  },
+  methods: {
+    onClickSortBtn(cat) {
+      this.currentCat = cat
     }
   }
 };

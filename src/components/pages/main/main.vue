@@ -99,7 +99,7 @@ export default {
       activeOfferCard: 0,
       aboutCards: [
         {
-          img: "static/images/offer-1.svg",
+          img: require("@/assets/images/offer-1.svg"),
           head: "Продавцам",
           text: "Укажите параметры квартиры и узнайте срок и стоимость продажи",
           subhead: "Рассчитать цену квартиры",
@@ -107,7 +107,7 @@ export default {
           label: 'calc-price'
         },
         {
-          img: "static/images/offer-2.svg",
+          img: require("@/assets/images/offer-2.svg"),
           head: "Застройщикам",
           text:
             "Задайте квартирографию,  участок строительства иполучите график продажи квартир в реализуемом объекте",
@@ -116,7 +116,7 @@ export default {
           label: 'for-build'
         },
         {
-          img: "static/images/offer-3.svg",
+          img: require("@/assets/images/offer-3.svg"),
           head: "Агентам",
           text: "Найдите выгодные предложения для вас и ваших клиентов",
           subhead: "Найти выгодные предложения",
@@ -126,7 +126,7 @@ export default {
       ],
       teamData: [
         {
-          img: 'static/images/team-1.png',
+          img: require('@/assets/images/team-1.png'),
           name: 'Владимир Тихомиров',
           position: 'Генеральный директор и Основатель',
           text: 'Как крипто-энтузиаст и предприниматель, Владимир имеет более 11 лет опыта работы в ИТ-бизнесе, в том числе бывший менеджер по продуктам в Motorola Solutions (в течение 7 лет). Владимир является одним из основателей DDG, центра разработки программного обеспечения с 50 сотрудниками. В дополнение к своему практическому опыту, он имеет докторскую степень в области компьютерных наук, объединяя все знания и опыт. Совсем недавно он основал MyWish Platform, ведущую платформу для создания смарт контрактов, поддерживаемую TRON, сообществом EOS, NEO, Waves и Binance.'

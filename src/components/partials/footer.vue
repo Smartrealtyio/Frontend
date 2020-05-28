@@ -1,7 +1,7 @@
 <template>
   <footer class="footer">
     <div class="content-wrapper">
-      <img class="footer_logo" src="static/images/logo.svg" />
+      <img class="footer_logo" src="@/assets/images/logo.svg" />
       <div class="footer-email">
         <a href="#">Info@SmartRealty.ai</a>
       </div>

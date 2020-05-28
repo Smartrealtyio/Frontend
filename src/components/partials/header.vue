@@ -2,7 +2,7 @@
   <header class="header" id="header" ref="header">
     <div class="content-wrapper">
       <div class="header_logo">
-        <img src="static/images/logo.svg" />
+        <img src="@/assets/images/logo.svg" />
       </div>
       <nav class="header_menu">
         <ul class="header_menu_list">

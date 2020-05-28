@@ -10,7 +10,10 @@
         укажите точку на карте
       </div>
       <div class="calculate-form_field">
-        <change-city :currentCity="currentCity" @change-city="changeCurrentCity"></change-city>
+        <change-city
+          :currentCity="currentCity"
+          @change-city="changeCurrentCity"
+        ></change-city>
       </div>
       <div class="calculate-form_field">
         <div class="calculate-form_field_label">
@@ -195,7 +198,10 @@
         укажите точку на карте
       </div>
 
-      <change-city :currentCity="currentCity" @change-city="changeCurrentCity"></change-city>
+      <change-city
+        :currentCity="currentCity"
+        @change-city="changeCurrentCity"
+      ></change-city>
 
       <div class="calculate-form_field">
         <div class="calculate-form_field_label">
@@ -418,9 +424,9 @@ import axios from "axios";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import testJson from "../../assets/test.json";
+// import testJson from "../../assets/test.json";
 
-import changeCity from './changeCity'
+import changeCity from "./changeCity";
 export default {
   props: {
     map: {
@@ -434,7 +440,7 @@ export default {
     },
   },
   components: {
-    changeCity
+    changeCity,
   },
   data() {
     return {
@@ -468,8 +474,8 @@ export default {
   },
   methods: {
     changeCurrentCity(index) {
-      this.currentCity = index
-      this.$emit('set-current-city', index)
+      this.currentCity = index;
+      this.$emit("set-current-city", index);
     },
     submitCalculate() {
       this.sendCalculateForm();
@@ -568,7 +574,7 @@ export default {
     },
     submitSearch() {
       this.sendSearchForm();
-      this.resultsData = []
+      this.resultsData = [];
     },
     sendSearchForm(notCreateData, addData) {
       // const searchResultsBlock = document.querySelector("#results-list-block");
@@ -582,39 +588,39 @@ export default {
         this.createSearchRequest();
       }
 
-      // let requestData = { ...this.searchFormRequest };
-      // if (addData) {
-      //   requestData = { ...requestData, ...addData };
-      // }
+      let requestData = { ...this.searchFormRequest };
+      if (addData) {
+        requestData = { ...requestData, ...addData };
+      }
       this.form_error.classList.add("hide");
-      // axios
-      //   .get("/api/mean/", {
-      //     params: requestData,
-      //   })
-      //   .then((res) => {
-      // res = res.data;
-      let res = testJson;
-        console.log(testJson, addData)
-      // searchResultsBlock.classList.add("show");
-      // searchResultsBlock.remove("in-progress");
-      if (res["max_page"] === res["page"]) {
-        this.show_more_button.classList.add("hide");
-      } else {
-        this.show_more_button.classList.remove("hide");
-      }
-      if (!notCreateData) {
-        this.searchResult = res["flats"];
-        this.iniShowMoreResults();
-      } else {
-        this.searchResult = this.searchResult.concat(res["flats"]);
-      }
-      // searchResultsBlock.classList.remove("in-progress");
-      if (res.flats.length) {
-        this.createClusters(this.searchResult);
-        this.showResultPage(res);
-      }
-      // })
-      // .catch((e) => console.log(e));
+      axios
+        .get("/api/mean/", {
+          params: requestData,
+        })
+        .then((res) => {
+          res = res.data;
+          // let res = testJson;
+          console.log(res, addData);
+          // searchResultsBlock.classList.add("show");
+          // searchResultsBlock.remove("in-progress");
+          if (res["max_page"] === res["page"]) {
+            this.show_more_button.classList.add("hide");
+          } else {
+            this.show_more_button.classList.remove("hide");
+          }
+          if (!notCreateData) {
+            this.searchResult = res["flats"];
+            this.iniShowMoreResults();
+          } else {
+            this.searchResult = this.searchResult.concat(res["flats"]);
+          }
+          // searchResultsBlock.classList.remove("in-progress");
+          if (res.flats.length) {
+            this.createClusters(this.searchResult);
+            this.showResultPage(res);
+          }
+        })
+        .catch((e) => console.log(e));
     },
     showResultPage(searchResult) {
       searchResult.flats.forEach((oneResultItem) => {
@@ -645,35 +651,19 @@ export default {
           }
           if (param === "price" || param === "price_per_m") {
             resultItemObj[visParam] = oneResultItem[param].toLocaleString();
-            continue
+            continue;
           }
 
           if (param === "profit") {
             resultItemObj[visParam] =
-              Math.max(Math.round(oneResultItem[param] * 10), 1) / 10 + "%";
-              continue
+              Math.max(Math.round(oneResultItem[param] * 10), 1) / 10;
+            continue;
           }
-          resultItemObj[visParam] = oneResultItem[param]
-          // switch (valElement.data(visParam)) {
-          //   case "text":
-          //     valElement.text(oneResultItem[visParam]);
-          //     break;
-          //   case "background":
-          //     valElement.css({
-          //       backgroundImage: "url(" + oneResultItem[visParam] + ")",
-          //     });
-          //     break;
-          //   default:
-          //     valElement.attr(
-          //       valElement.data(visParam),
-          //       oneResultItem[visParam]
-          //     );
-          // }
+          resultItemObj[visParam] = oneResultItem[param];
         }
-        // this.resultsBlock.append(resultItemElement);
         this.resultsData.push(resultItemObj);
       });
-      this.$emit('set-res', this.resultsData)
+      this.$emit("set-res", this.resultsData);
     },
     createClusters(data) {
       var customItemContentLayout = window[
