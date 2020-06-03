@@ -7,7 +7,7 @@
       <div class="calculate-form_map_label" data-analyze-map-title>
         Укажите точку на карте
       </div>
-      <div class="calculate-form__steps calculate-form__steps--build">
+      <div class="calculate-form__steps calculate-form__steps--build calculate-form__steps--first">
         Укажите точку на карте:
       </div>
       <div class="calculate-form_map_container" id="realty-map">
@@ -16,61 +16,43 @@
     </div>
     <calc-forms
       @set-coord="setCoord"
-      @set-res="setResults"
       @set-current-city="setCurCity"
       :map="map"
+      :markCoord="markCoord"
       :clusterer="clusterer"
       :calculateFormRequest="calculateFormRequest"
     ></calc-forms>
-    <build-form :markCoord="markCoord" :currentCity="currentCity" :timeToMetro="time_to_metro"></build-form>
-    <search-results :searchData="resData"></search-results>
-    <div class="calculate-form_result" id="results" style="display: none;">
-      <div class="calculate-form_result_item">
-        <div class="calculate-form_result_item_title">
-          Рекомендованная цена
-        </div>
-        <div class="calculate-form_result_item_value" id="result_price"></div>
-      </div>
-      <div class="calculate-form_result_item">
-        <div class="calculate-form_result_item_title">
-          Среднее время продажи
-        </div>
-        <div
-          class="calculate-form_result_item_value"
-          id="result_duration"
-        ></div>
-      </div>
-
-      <div id="chartdiv" style="height: 400px; width: 100%;"></div>
-
-      <div class="calculate-form_error" id="empty-msg">
-        <span>Недостаточно данных</span>
-      </div>
-    </div>
+    <build-form
+      :markCoord="markCoord"
+      :currentCity="currentCity"
+      :timeToMetro="time_to_metro"
+      @set-loading="setLoading"
+    ></build-form>
+    <div
+      class="calculate-form_loading"
+      v-show="isLoading"
+    ></div>
   </div>
 </template>
 
 <script>
 import calcForms from "./calcForms";
 import buildForm from "./buildForm";
-import searchResults from "./searchResults";
 export default {
   components: {
     calcForms,
-    searchResults,
-    buildForm
+    buildForm,
   },
   data() {
     return {
+      isLoading: false,
       map: null,
       coord: [55.76, 37.64],
       searchControl: null,
-      emptyMsg: null,
       placemark: null,
       form_error: null,
       analyzeBtn: null,
       searchBtn: null,
-      results: null,
       addressValue: "",
       addressString: null,
       addressStringField: null,
@@ -82,15 +64,18 @@ export default {
       buildBtn: null,
       markCoord: {
         lat: null,
-        lng: null
+        lng: null,
       },
       currentCity: 0,
-      time_to_metro: null
+      time_to_metro: null,
     };
   },
   methods: {
+    setLoading(isloading) {
+      this.isLoading = isloading
+    },
     setCurCity(index) {
-      this.currentCity = index
+      this.currentCity = index;
     },
     setCoord(coord) {
       this.coord = coord;
@@ -110,33 +95,37 @@ export default {
     },
     iniBuildForm() {
       this.removeCoordAndEvents();
-      this.results.classList.remove('show')
       this.searchControl.events.add("resultselect", this.searchResultParse);
       this.map.events.add("click", this.iniMarkerPosition);
       this.form_error.classList.add("hide");
-      this.emptyMsg.classList.add("hide");
+      this.markCoord.lat = null;
+      this.markCoord.lng = null;
     },
     iniAnalyzeForm() {
       this.removeCoordAndEvents();
       this.searchControl.events.add("resultselect", this.searchResultParse);
       this.map.events.add("click", this.iniMarkerPosition);
       this.form_error.classList.add("hide");
-      this.emptyMsg.classList.add("hide");
       this.clusterer ? this.map.geoObjects.remove(this.clusterer) : false;
+      
+      this.markCoord.lat = null;
+      this.markCoord.lng = null;
     },
     removeCoordAndEvents() {
-      setTimeout(() => {
-        this.map.container.fitToViewport();
-      }, 0);
+      if (this.map) {
+        setTimeout(() => {
+          this.map.container.fitToViewport();
+        }, 0);
+      }
       this.addressValue = "";
-      this.map.events.remove("click", this.iniMarkerPosition);
+      if (this.map) {
+        this.map.events.remove("click", this.iniMarkerPosition);
+      }
       this.searchControl.events.remove("resultselect", this.searchResultParse);
       this.map.geoObjects.remove(this.placemark);
 
       this.placemark = false;
 
-      this.results.classList.add("hide");
-      this.emptyMsg.classList.add("hide");
 
       this.calculate_form_lat.value = "";
       this.calculate_form_lng.value = "";
@@ -145,9 +134,10 @@ export default {
       this.addressStringField.value = "";
     },
     iniSearchForm() {
-      this.results.classList.remove('show')
       this.removeCoordAndEvents();
       this.clusterer ? this.map.geoObjects.add(this.clusterer) : this.clusterer;
+      this.markCoord.lat = null;
+      this.markCoord.lng = null;
     },
     searchResultParse(event) {
       const index = event.get("index");
@@ -167,8 +157,8 @@ export default {
           {},
           {
             preset: "islands#redIcon",
-            iconImageHref: require('@/assets/images/icons/marker.svg'),
-            iconImageSize: [30, 42]
+            iconImageHref: require("@/assets/images/icons/marker.svg"),
+            iconImageSize: [30, 42],
           }
         );
         this.map.geoObjects.add(this.placemark);
@@ -182,8 +172,8 @@ export default {
       });
 
       this.placemark.geometry.setCoordinates(coo);
-      this.markCoord.lat = coo[0]
-      this.markCoord.lng = coo[1]
+      this.markCoord.lat = coo[0];
+      this.markCoord.lng = coo[1];
       this.calculate_form_lat.value = coo[0];
       this.calculate_form_lng.value = coo[1];
       this.checkMetroDuration();
@@ -202,7 +192,7 @@ export default {
           this.calculateFormRequest.time_to_metro = Math.round(
             routes[0].properties.get("duration").value / 60
           );
-          this.time_to_metro = this.calculateFormRequest.time_to_metro
+          this.time_to_metro = this.calculateFormRequest.time_to_metro;
         });
       });
     },
@@ -277,7 +267,6 @@ export default {
     this.calculate_form_lat = document.querySelector("#calculate_form_lat");
     this.calculate_form_lng = document.querySelector("#calculate_form_lng");
 
-    this.emptyMsg = document.querySelector("#empty-msg");
     this.form_error = document.querySelector("#search-form_error");
 
     this.analyzeBtn = document.querySelector("#analyze-init");
@@ -289,7 +278,6 @@ export default {
     this.buildBtn = document.querySelector("#build-init");
     this.buildBtn.addEventListener("click", this.iniBuildForm);
 
-    this.results = document.querySelector("#results");
   },
   destroyed() {
     this.analyzeBtn.removeEventListener("click", this.iniAnalyzeForm);

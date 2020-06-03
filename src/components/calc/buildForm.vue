@@ -1,5 +1,18 @@
 <template>
   <form class="b-res" @submit.prevent="submitForm">
+    <div class="b-res__mask" v-show="!coordChanged"></div>
+    <div class="b-res__impexp">
+      <div class="b-res__table-btn-add b-res__impexp-btn" @click="exportTable">
+        Экспорт
+      </div>
+      <label
+        class="b-res__table-btn-add b-res__impexp-btn"
+        @change="importTable"
+      >
+        <span>Импорт</span>
+        <input type="file" accept=".csv" />
+      </label>
+    </div>
     <input
       type="text"
       class="b-res__input-map"
@@ -65,26 +78,32 @@
                 type="number"
                 required
                 name="build-radio"
-                placeholder="9"
                 class="b-res__house-input-number"
                 v-model.number="result.floors_count"
+                @input="onFloorsCountChange"
               />
             </div>
           </div>
-          <label class="calculate-form_checkbox b-res__house-input-check">
-            <input type="checkbox" name="renovation" v-model="result.parking" />
-            <span class="calculate-form_checkbox_mask"></span>
-            <span class="calculate-form_checkbox_text">Паркинг</span>
-          </label>
-          <label class="calculate-form_checkbox b-res__house-input-check">
-            <input
-              type="checkbox"
-              name="renovation"
-              v-model="result.elevator"
-            />
-            <span class="calculate-form_checkbox_mask"></span>
-            <span class="calculate-form_checkbox_text">Лифт</span>
-          </label>
+          <div class="calculate-form_checkbox-wrapper">
+            <label class="calculate-form_checkbox b-res__house-input-check">
+              <input
+                type="checkbox"
+                name="renovation"
+                v-model="result.parking"
+              />
+              <span class="calculate-form_checkbox_mask"></span>
+              <span class="calculate-form_checkbox_text">Паркинг</span>
+            </label>
+            <label class="calculate-form_checkbox b-res__house-input-check">
+              <input
+                type="checkbox"
+                name="renovation"
+                v-model.number="result.elevator"
+              />
+              <span class="calculate-form_checkbox_mask"></span>
+              <span class="calculate-form_checkbox_text">Лифт</span>
+            </label>
+          </div>
         </div>
       </div>
       <div class="b-res__apart">
@@ -96,7 +115,7 @@
             <img :src="require('@/assets/images/icons/plus-row.svg')" alt="" />
             <span>Добавить тип квартиры</span>
           </div>
-          <div class="b-res__table-row">
+          <div class="b-res__table-row b-res__table-head">
             <div
               class="b-res__table-head-item"
               v-for="(item, i) in tableCats"
@@ -124,81 +143,112 @@
             v-for="(itemRow, index) in sortRows"
             :key="index"
           >
-            <input
-              type="text"
-              class="b-res__table-input-box"
-              readonly
-              :value="`тип ${itemRow.type}`"
-            />
-            <select
-              name="rooms"
-              id=""
-              class="b-res__table-input-box b-res__table-select"
-              v-model.number="itemRow.rooms"
-            >
-              <option value="s">Студия</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">+4</option>
-            </select>
-            <div class="b-res__table-input-wrapper">
+            <div class="b-res__table-item">
+              <div class="b-res__table-item-descr">Тип</div>
+              <input
+                type="text"
+                class="b-res__table-input-box"
+                readonly
+                :value="`тип ${itemRow.type}`"
+              />
+            </div>
+            <div class="b-res__table-item">
+              <div class="b-res__table-item-descr">Комнат</div>
+              <select
+                name="rooms"
+                id=""
+                class="b-res__table-input-box b-res__table-select"
+                v-model.number="itemRow.rooms"
+              >
+                <option value="s">Студия</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">+4</option>
+              </select>
+            </div>
+            <div class="b-res__table-item">
+              <div class="b-res__table-item-descr">Общая</div>
+              <div class="b-res__table-input-wrapper">
+                <input
+                  type="number"
+                  class="b-res__table-input-box"
+                  v-model.number="itemRow.full_sq"
+                />
+                <span class="b-res__table-input-field">м<sup>2</sup></span>
+              </div>
+            </div>
+            <div class="b-res__table-item">
+              <div class="b-res__table-item-descr">Жилая</div>
+              <div class="b-res__table-input-wrapper">
+                <input
+                  type="number"
+                  class="b-res__table-input-box"
+                  v-model.number="itemRow.life_sq"
+                />
+                <span class="b-res__table-input-field">м<sup>2</sup></span>
+              </div>
+            </div>
+            <div class="b-res__table-item">
+              <div class="b-res__table-item-descr">Кухня</div>
+              <div class="b-res__table-input-wrapper">
+                <input
+                  type="number"
+                  class="b-res__table-input-box"
+                  v-model.number="itemRow.kitchen_sq"
+                />
+                <span class="b-res__table-input-field">м<sup>2</sup></span>
+              </div>
+            </div>
+            <div class="b-res__table-item">
+              <div class="b-res__table-item-descr">Ремонт</div>
+              <select
+                name="rooms"
+                id=""
+                class="b-res__table-input-box b-res__table-select"
+                v-model.number="itemRow.renovation_type"
+              >
+                <option value="0">Без ремонта</option>
+                <option value="1">Косметический</option>
+                <option value="1">Не указано</option>
+                <option value="2">Евроремонт</option>
+                <option value="3">Дизайнерский</option>
+              </select>
+            </div>
+            <div class="b-res__table-item">
+              <div class="b-res__table-item-descr">Вид из окна</div>
+              <select
+                name="rooms"
+                id=""
+                class="b-res__table-input-box b-res__table-select"
+                v-model.number="itemRow.windows_view"
+              >
+                <option value="0">Во двор</option>
+                <option value="1">На улицу и двор</option>
+                <option value="1">Не указано</option>
+                <option value="2">На улицу</option>
+              </select>
+            </div>
+            <div class="b-res__table-item">
+              <div class="b-res__table-item-descr">Кол-во</div>
               <input
                 type="number"
                 class="b-res__table-input-box"
-                v-model.number="itemRow.full_sq"
+                v-model="itemRow.flats_count"
               />
-              <span class="b-res__table-input-field">м<sup>2</sup></span>
             </div>
-            <div class="b-res__table-input-wrapper">
+            <div class="b-res__table-item">
+              <div class="b-res__table-item-descr">
+                <span
+                  >Стоимость <span>м<sup>2</sup></span> в первый месяц</span
+                >
+              </div>
               <input
                 type="number"
                 class="b-res__table-input-box"
-                v-model.number="itemRow.life_sq"
+                v-model="itemRow.price_meter_sq"
               />
-              <span class="b-res__table-input-field">м<sup>2</sup></span>
             </div>
-            <div class="b-res__table-input-wrapper">
-              <input
-                type="number"
-                class="b-res__table-input-box"
-                v-model.number="itemRow.kitchen_sq"
-              />
-              <span class="b-res__table-input-field">м<sup>2</sup></span>
-            </div>
-            <select
-              name="rooms"
-              id=""
-              class="b-res__table-input-box b-res__table-select"
-              v-model.number="itemRow.renovation_type"
-            >
-              <option value="0">Без ремонта</option>
-              <option value="1">Косметический</option>
-              <option value="1">Не указано</option>
-              <option value="2">Евроремонт</option>
-              <option value="3">Дизайнерский</option>
-            </select>
-            <select
-              name="rooms"
-              id=""
-              class="b-res__table-input-box b-res__table-select"
-              v-model.number="itemRow.windows_view"
-            >
-              <option value="0">Во двор</option>
-              <option value="1">На улицу и двор</option>
-              <option value="1">Не указано</option>
-              <option value="2">На улицу</option>
-            </select>
-            <input
-              type="number"
-              class="b-res__table-input-box"
-              v-model="itemRow.flats_count"
-            />
-            <input
-              type="number"
-              class="b-res__table-input-box"
-              v-model="itemRow.price_meter_sq"
-            />
           </div>
           <div class="b-res__table-box">
             <div
@@ -225,17 +275,17 @@
     </div>
     <div
       id="firtGraph"
-      style="height: 400px; width: 100%;"
+      class="b-res__graph b-res__graph--first"
       v-show="dataReady"
     ></div>
     <div
       id="secondGraph"
-      style="height: 400px; width: 100%;"
+      class="b-res__graph b-res__graph--second"
       v-show="dataReady"
     ></div>
     <div
       id="thirdGraph"
-      style="height: 400px; width: 100%;"
+      class="b-res__graph b-res__graph--third"
       v-show="dataReady"
     ></div>
   </form>
@@ -247,6 +297,7 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4chartsLeng from "@amcharts/amcharts4/lang/ru_RU.js";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+import { saveAs } from "file-saver";
 export default {
   props: {
     markCoord: {
@@ -261,6 +312,9 @@ export default {
   },
   data() {
     return {
+      isMapParam: false,
+      isHouseParam: false,
+      isApartsParam: false,
       dataReady: false,
       chart1: null,
       chart2: null,
@@ -274,7 +328,7 @@ export default {
         end_timestamp: 0,
         floors_count: 9,
         parking: false,
-        elevator: false,
+        elevator: true,
         flats: [
           {
             type: 1,
@@ -362,23 +416,90 @@ export default {
             return item2[this.currentCat] - item1[this.currentCat];
           });
     },
+    coordChanged() {
+      return this.markCoord.lat != null ? true : false;
+    },
   },
   methods: {
+    onFloorsCountChange() {
+      this.result.elevator = this.result.floors_count >= 4 ? true : false;
+    },
+    importTable(e) {
+      const self = this;
+      const file = e.target.files[0];
+      this.$papa.parse(file, {
+        delimiter: ";",
+        complete: (results) => {
+          self.result.flats = [];
+          self.currentId = 0;
+          results.data.map((item) => {
+            self.currentId = self.currentId + 1;
+            const currentRow = {
+              type: item[0],
+              rooms: item[1],
+              full_sq: item[2],
+              life_sq: item[3],
+              kitchen_sq: item[4],
+              renovation_type: item[5],
+              windows_view: item[6],
+              flats_count: item[7],
+              price_meter_sq: item[8],
+            };
+            self.result.flats.push(currentRow);
+          });
+        },
+        error: (results) => {
+          console.log(results);
+        },
+      });
+    },
+    exportTable() {
+      const delimiter = ";";
+      const EOL = "\r\n";
+      const rows = this.result.flats.map((item, index) => {
+        return (
+          [
+            item.type,
+            item.rooms,
+            item.full_sq,
+            item.life_sq,
+            item.kitchen_sq,
+            item.renovation_type,
+            item.windows_view,
+            item.flats_count,
+            item.price_meter_sq,
+          ].join(delimiter) +
+          (index === this.result.flats.length - 1 ? "" : EOL)
+        );
+      });
+      saveAs(new Blob(rows, { type: "text/csv;charset=utf-8" }), "data.csv");
+    },
+    changeDate(date) {
+      const splitDate = date.split(".");
+      return new Date(
+        Date.UTC(splitDate[2], (12 + splitDate[1] - 1) % 12, splitDate[0])
+      );
+    },
     submitForm() {
-      
       this.dataReady = false;
-      this.result.start_timestamp = Math.round(new Date(this.start_time).getTime() / 1000);
-      this.result.end_timestamp = Math.round(new Date(this.end_time).getTime() / 1000);
+      console.log(this.changeDate(this.start_time).getTime() / 1000);
+      this.result.start_timestamp = Math.round(
+        this.changeDate(this.start_time).getTime() / 1000
+      );
+      this.result.end_timestamp = Math.round(
+        this.changeDate(this.end_time).getTime() / 1000
+      );
       this.result.longitude = this.markCoord.lng;
       this.result.latitude = this.markCoord.lat;
       this.result.city_id = this.currentCity;
       this.result.time_to_metro = this.timeToMetro;
-
+      this.$emit("set-loading", true);
       axios
         .post("/api/builder/", this.result)
         .then((result) => {
           console.log(result);
           this.dataReady = true;
+          this.$emit("set-loading", false);
 
           this.chart1.data = result.data.first_graphic;
           this.chart2.data = result.data.second_graphic;
@@ -458,19 +579,24 @@ export default {
       let valueAxis = this.chart1.yAxes.push(new am4charts.ValueAxis());
       valueAxis.numberFormatter = new am4core.NumberFormatter();
       valueAxis.numberFormatter.numberFormat = "# ' млн'";
+      if (window.innerWidth < 767) {
+        valueAxis.renderer.fontSize = "10px";
+        categoryAxis.renderer.fontSize = "10px";
+      }
       valueAxis.min = 0;
 
       // Create series
       function createSeries(field, name) {
         let series = self.chart1.series.push(new am4charts.ColumnSeries());
         series.dataFields.valueY = "revenue_" + field;
-        series.dataFields.categoryX = "month_announce";
+        series.dataFields.categoryX = "month_graphic";
         series.dataFields.tooltipYField = field;
         series.columns.template.fill = am4core.color(obj[field + "_color"]);
         series.name = name;
         series.columns.template.tooltipText =
           `${obj[field]}: ` + "{tooltipYField}";
         series.stacked = true;
+        // series.clustered = false;
         // series.columns.template.width = am4core.percent(95);
       }
 
@@ -481,6 +607,8 @@ export default {
       createSeries("4", "4 ком");
 
       this.chart1.legend = new am4charts.Legend();
+      this.chart1.scrollbarX = new am4core.Scrollbar();
+      this.chart1.scrollbarX.parent = this.chart1.bottomAxesContainer;
 
       this.chart2 = am4core.create("secondGraph", am4charts.XYChart);
       this.chart2.language.locale = am4chartsLeng;
@@ -489,14 +617,18 @@ export default {
       // Create category axis
       var categoryAxis2 = this.chart2.xAxes.push(new am4charts.DateAxis());
       categoryAxis2.skipEmptyPeriods = true;
-      categoryAxis2.renderer.grid.template.location = 0;
-      categoryAxis2.renderer.minGridDistance = 10;
-      categoryAxis2.renderer.cellStartLocation = 0.2;
-      categoryAxis2.renderer.cellEndLocation = 0.1;
+      // categoryAxis2.renderer.grid.template.location = 0;
+      categoryAxis2.renderer.minGridDistance = 90;
+      // categoryAxis2.renderer.cellStartLocation = 0.2;
+      // categoryAxis2.renderer.cellEndLocation = 0.1;
 
       // Create value axis
       var valueAxis2 = this.chart2.yAxes.push(new am4charts.ValueAxis());
       valueAxis2.renderer.minLabelPosition = 0.01;
+      if (window.innerWidth < 767) {
+        valueAxis2.renderer.fontSize = "10px";
+        categoryAxis2.renderer.fontSize = "10px";
+      }
 
       // Create series
       function createSeries2(field) {
@@ -524,6 +656,8 @@ export default {
 
       // Add legend
       this.chart2.legend = new am4charts.Legend();
+      this.chart2.scrollbarX = new am4core.Scrollbar();
+      this.chart2.scrollbarX.parent = this.chart2.bottomAxesContainer;
 
       this.chart3 = am4core.create("thirdGraph", am4charts.XYChart);
       this.chart3.language.locale = am4chartsLeng;
@@ -531,7 +665,7 @@ export default {
       // Add percent sign to all numbers
       // chart3.numberFormatter.numberFormat = "#.#'%'";
 
-      this.chart3.dateFormatter.inputDateFormat = "yyyy-MM-dd";
+      this.chart3.dateFormatter.inputDateFormat = "dd";
       // Add data
       const obj3 = {
         s_opacity: "#E0F1E1",
@@ -550,10 +684,14 @@ export default {
       var categoryAxis3 = this.chart3.xAxes.push(new am4charts.DateAxis());
       false;
       categoryAxis3.skipEmptyPeriods = true;
-      categoryAxis3.renderer.minGridDistance = 60;
+      categoryAxis3.renderer.minGridDistance = 90;
 
       var valueAxis3 = this.chart3.yAxes.push(new am4charts.ValueAxis());
       valueAxis3.title.fontWeight = 800;
+      if (window.innerWidth < 767) {
+        valueAxis3.renderer.fontSize = "10px";
+        categoryAxis3.renderer.fontSize = "10px";
+      }
 
       // Create series
 
@@ -565,7 +703,7 @@ export default {
         series.strokeWidth = 0;
         series.dataFields.tooltipYField = field + "_all";
         series.columns.template.fill = am4core.color(obj3[field + "_opacity"]);
-        series.tooltipText = `${obj[field]} осталось: ` + "[bold]{valueY}[/]";
+        series.tooltipText = `${obj[field]} всего: ` + "[bold]{valueY}[/]";
 
         var series2 = self.chart3.series.push(new am4charts.ColumnSeries());
         series2.dataFields.valueY = field + "_sold";
@@ -582,7 +720,8 @@ export default {
       createSeries3("2");
       createSeries3("3");
       createSeries3("4");
-
+      this.chart3.scrollbarX = new am4core.Scrollbar();
+      this.chart3.scrollbarX.parent = this.chart3.bottomAxesContainer;
       this.chart3.cursor = new am4charts.XYCursor();
       this.chart3.cursor.lineX.disabled = true;
       this.chart3.cursor.lineY.disabled = true;
@@ -603,9 +742,24 @@ select {
     outline: none;
   }
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 .b-res {
   margin-top: 50px;
   position: relative;
+  &__graph {
+    height: 400px;
+    width: 100%;
+    & + & {
+      margin-top: 50px;
+    }
+  }
   &__input-map {
     position: absolute;
     top: -50px;
@@ -635,6 +789,17 @@ select {
     background: #f9f9ff;
     padding: 40px 25px 25px 40px;
     position: relative;
+    &-item {
+      position: relative;
+      &-descr {
+        position: absolute;
+        bottom: 100%;
+        font-size: 14px;
+        line-height: 26px;
+        left: 0;
+        display: none;
+      }
+    }
     &-box {
       display: flex;
     }
@@ -668,14 +833,14 @@ select {
         border: 2px solid #66bb6a;
         box-sizing: border-box;
         border-radius: 5px;
-        bottom: calc(100% + 20px);
+        bottom: calc(100% + 21px);
         right: 0;
-        padding: 10px 22px;
+        padding: 8.5px 22px;
         cursor: pointer;
         span {
           margin-left: 10px;
           font-size: 14px;
-          line-height: 17px;
+          line-height: 32px;
           font-weight: 600;
           color: #66bb6a;
         }
@@ -708,6 +873,7 @@ select {
         padding: 12px;
         font-weight: bold;
         font-size: 14px;
+        width: 100%;
         line-height: 26px;
       }
     }
@@ -751,6 +917,43 @@ select {
       }
     }
   }
+  &__mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff8a;
+    z-index: 3;
+  }
+  &__impexp {
+    position: absolute;
+    top: 240px;
+    right: 284px;
+    display: flex;
+    &-btn {
+      position: relative;
+      color: #66bb6a;
+      padding: 8px 30px;
+      font-size: 14px;
+      line-height: 32px;
+      font-weight: 600;
+      & + & {
+        margin-left: 20px;
+      }
+      input {
+        position: absolute;
+        height: 0;
+        width: 0;
+        z-index: -1;
+      }
+      span {
+        margin-left: 0;
+      }
+    }
+  }
   &__container {
     & + & {
       margin-top: 50px;
@@ -760,6 +963,7 @@ select {
     margin-top: 50px;
   }
   &__house {
+    position: relative;
     &-box {
       background: #f9f9ff;
       border: 1px solid #ebebeb;
@@ -827,6 +1031,134 @@ select {
       }
       .calculate-form_radio {
         width: 100px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 767px) {
+  .b-res {
+    &__graph {
+      height: 300px;
+      & + & {
+        margin-top: 30px;
+      }
+      &--first {
+        margin-top: 50px;
+      }
+    }
+    &__impexp {
+      width: 100%;
+      padding: 0 10px;
+      box-sizing: border-box;
+      top: 590px;
+      right: 0;
+      &-btn {
+        width: 100%;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        & + & {
+          margin-left: 10px;
+        }
+      }
+    }
+    &__apart {
+      margin-top: 30px;
+      padding: 0 10px;
+    }
+    &__send {
+      width: calc(100vw - 20px);
+      margin: 30px 10px 0px;
+    }
+    &__table {
+      margin-top: 160px;
+      padding: 15px 15px 20px;
+      &-box {
+        display: grid;
+        grid-template-columns: 1fr 48px;
+      }
+      &-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        & + & {
+          margin-top: 55px;
+        }
+      }
+      &-item {
+        width: 45%;
+        &:nth-of-type(n + 3) {
+          margin-top: 40px;
+        }
+        &:last-of-type {
+          width: 100%;
+        }
+        &:last-of-type &-descr {
+          width: 100%;
+        }
+        &-descr {
+          display: block;
+        }
+      }
+      &-head {
+        display: none;
+      }
+      &-btn {
+        &-add {
+          width: 100%;
+          justify-content: center;
+        }
+        &--double {
+          width: auto;
+          text-align: center;
+        }
+      }
+    }
+    &__house {
+      padding: 0 10px;
+      &-input {
+        &-date {
+          text-align: center;
+          &-box {
+            width: 100%;
+          }
+        }
+        &-number {
+          &-box {
+            display: block !important;
+            width: 80px;
+            input {
+              box-sizing: border-box;
+              height: 100%;
+            }
+          }
+        }
+        &-check {
+          margin-left: 0;
+        }
+      }
+      &-box {
+        padding: 45px 15px 30px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      &-item {
+        width: 100%;
+        & + & {
+          margin-left: 0;
+          margin-top: 50px;
+        }
+        &-box {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-gap: 15px 15px;
+        }
+        .calculate-form_radio {
+          width: 100%;
+        }
+        .calculate-form_radio + .calculate-form_radio {
+          margin-left: 0;
+        }
       }
     }
   }

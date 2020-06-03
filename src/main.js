@@ -3,6 +3,7 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 import YmapPlugin from 'vue-yandex-maps'
 import { VueMaskDirective } from 'v-mask'
+import VuePapaParse from 'vue-papa-parse'
 
 const settings = {
   apiKey: 'b6002087-f5e1-4c54-9e94-aac8b9c4d6d9',
@@ -12,6 +13,7 @@ const settings = {
 }
 Vue.use(VueRouter)
 Vue.use(YmapPlugin, settings)
+Vue.use(VuePapaParse)
 
 Vue.directive('mask', VueMaskDirective);
 

@@ -122,6 +122,12 @@ sup {
   box-shadow: 0 3px 4px rgba(102, 187, 106, 0.2);
 }
 
+form {
+  .btn-submit {
+    width: 100%;
+  }
+}
+
 .main {
 }
 .main_section {
@@ -134,9 +140,7 @@ sup {
   margin-bottom: 0.5em;
 }
 .main_section__home {
-  background: url(./assets/images/woman.svg) calc(50% + 305px) calc(50% + 15px)
-      no-repeat,
-    url(./assets/images/home.svg) center center no-repeat;
+  background: url(./assets/images/main-bg.svg) calc(100% + 5vw) top no-repeat;
   background-size: auto, cover;
   padding: 160px 0;
 }
@@ -151,11 +155,11 @@ sup {
   line-height: 32px;
   color: #263238;
   margin-top: 50px;
+  max-width: 470px;
 }
 .main_section__home_title,
 .main_section__home_description {
   width: 640px;
-  max-width: 100%;
 }
 .main_section__home_button {
   margin-top: 60px;
@@ -248,6 +252,17 @@ sup {
   position: relative;
   counter-reset: step;
   flex-direction: column;
+  &_mask {
+    position: absolute;
+    width: 370px;
+    height: 73%;
+    bottom: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff8a;
+    z-index: 3;
+  }
   &__steps {
     font-weight: bold;
     font-size: 18px;
@@ -315,7 +330,7 @@ sup {
         opacity: 0;
         transition: 0.3s;
         &::before {
-          content: '';
+          content: "";
           width: 24px;
           height: 24px;
           position: absolute;
@@ -379,18 +394,21 @@ sup {
   color: #212121;
 }
 .calculate-form_checkbox-group {
-  margin-top: 10px;
+  margin-top: 30px;
   .calculate-form_checkbox + .calculate-form_checkbox {
     margin-left: 0;
   }
 }
 .calculate-form_checkbox {
   margin-bottom: 10px;
+  &-wrapper {
+    display: flex;
+  }
 }
 .calculate-form_checkbox,
 .calculate-form_radio {
   position: relative;
-  overflow: hidden;
+  // overflow: hidden;
   display: block;
   cursor: pointer;
   vertical-align: middle;
@@ -484,6 +502,22 @@ sup {
 }
 
 .calculate-form_btn {
+  margin-top: 20px;
+  position: relative;
+  &--nodata {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff8a;
+    z-index: 3;
+  }
+  &-wrapper {
+    position: relative;
+  }
 }
 .calculate-form_map {
   float: left;
@@ -500,27 +534,50 @@ sup {
   }
 }
 .calculate-form_map_container {
-  /* height: 510px; */
   height: 580px;
 }
 
 .calculate-form_result {
-  clear: both;
-  padding-top: 20px;
-  text-align: right;
+  float: left;
+  padding: 20px;
+  background: #ffffff;
+  box-shadow: -1px 13px 20px #f0f2f4;
+  border-radius: 5px;
+  margin-top: 40px;
+  width: 875px;
+  &-head {
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 32px;
+    margin-bottom: 30px;
+    margin-top: 75px;
+  }
+  &-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  &-text {
+    margin-left: 20px;
+    max-width: 600px;
+    font-size: 14px;
+    line-height: 26px;
+    color: #66bb6a;
+  }
 }
 .calculate-form_result_item {
   display: inline-block;
-  margin-left: 15px;
   background: #ffffff;
   box-shadow: -1px 13px 20px #f0f2f4;
   border-radius: 5px;
   padding: 30px;
-  overflow: hidden;
   position: relative;
   text-align: left;
   min-width: 28%;
   box-sizing: border-box;
+  & + & {
+    margin-left: 20px;
+  }
 }
 #empty-msg .calculate-form_result_item {
   width: 100% !important;
@@ -533,7 +590,8 @@ sup {
   left: 0;
   top: 0;
   bottom: 0;
-  width: 3px;
+  width: 5px;
+  border-radius: 8px;
   background: #66bb6a;
   box-shadow: -1px 13px 20px #f0f2f4;
   content: "";
@@ -548,7 +606,7 @@ sup {
   font-size: 20px;
   line-height: 24px;
   color: #66bb6a;
-  margin-top: 5px;
+  margin-top: 15px;
 }
 
 .calculate-form_loading {
@@ -561,7 +619,7 @@ sup {
   padding: 0;
   margin: 0;
   background-color: #ffffff8a;
-  z-index: 2;
+  z-index: 3;
   justify-content: center;
   align-items: center;
   background-image: url(./assets/images/loading.gif);
@@ -605,6 +663,7 @@ sup {
 .team-list_item {
   width: fit-content;
   margin-bottom: 25px;
+  max-width: 310px;
   & + & {
     margin-left: 150px;
   }
@@ -808,6 +867,7 @@ sup {
 [value="for-build"]:checked ~ .calculate-form #calculate-form,
 [value="for-build"]:checked ~ .calculate-form [data-analyze-map-title],
 [value="for-build"]:checked ~ .calculate-form .calculate-form_result,
+[value="for-build"]:checked ~ .calculate-form #results-list-block,
 [value="for-build"]:checked ~ #results {
   display: none;
 }
@@ -1109,6 +1169,13 @@ template {
   color: #212121;
 }
 
+.calculate-form__field {
+  &--big {
+    max-width: 48% !important;
+    margin-top: 0 !important;
+  }
+}
+
 .wide-group {
   display: flex;
   flex-wrap: wrap;
@@ -1213,16 +1280,6 @@ template {
     background-size: 0, cover;
   }
 }
-
-@media screen and (max-width: 580px) {
-  .calculate-form_field {
-    width: 100%;
-  }
-  .calculate-form_checkbox {
-    display: block;
-  }
-}
-
 @media screen and (max-width: 640px) {
   .main_section__home_title {
     font-size: 7vw;
@@ -1247,6 +1304,313 @@ template {
   .team-list_item_ava {
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+#chartdiv {
+  height: 400px;
+  width: 100%;
+}
+
+@media screen and (max-width: 580px) {
+  .calculate-form_field {
+    width: 100%;
+  }
+  .calculate-form_checkbox {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .results-list {
+    padding: 0 10px;
+    .main_section__team_title {
+      font-size: 20px;
+      line-height: 32px;
+    }
+    &_item {
+      padding: 15px 20px 25px 15px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      &_price {
+        padding: 0;
+        position: static;
+      }
+      &_profit {
+        background-image: url(./assets/images/sale-mobile.svg);
+        left: 60px;
+        top: 5px;
+      }
+      &_desc {
+        order: 1;
+        padding: 0;
+        margin-top: 40px;
+      }
+      &_img {
+        width: fit-content;
+        &_content {
+          width: 72px;
+          height: 72px;
+        }
+      }
+    }
+  }
+  .content-wrapper {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  .header {
+    padding: 20px 0;
+    top: -1px;
+    &_logo img {
+      height: 30px;
+    }
+  }
+  .main_section {
+    &_title {
+      font-size: 26px;
+      line-height: 32px;
+    }
+    &__home {
+      padding: 80px 0 240px;
+      background: url(./assets/images/main-bg-mobile.svg) center bottom
+        no-repeat;
+      background-size: contain;
+      &_title {
+        width: 100%;
+        font-size: 26px;
+        line-height: 32px;
+      }
+      &_description {
+        width: 100%;
+        font-size: 16px;
+        line-height: 24px;
+      }
+      &_button .btn {
+        width: 100%;
+        text-align: center;
+        box-shadow: 0px 13px 20px rgba(118, 196, 125, 0.411204);
+      }
+    }
+    &__about {
+      padding: 20px 0 20px;
+      background: unset;
+      &_description {
+        font-size: 16px;
+        line-height: 24px;
+      }
+    }
+    &__calculate {
+      padding: 0;
+      .content-wrapper {
+        padding: 0;
+      }
+    }
+  }
+  .about-offers {
+    margin-top: 25px;
+    &_item {
+      text-align: center;
+      padding: 30px 10px 20px;
+      & + & {
+        margin-left: 0;
+        margin-top: 15px;
+      }
+      &_desc {
+        margin-top: 10px;
+      }
+      &_box {
+        padding: 8px 0;
+        width: 100%;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 32px;
+        height: 48px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 0 none;
+        outline: 0 none;
+        transition: all linear 0.05s;
+        display: inline-block;
+        text-align: center;
+        box-sizing: border-box;
+        color: #fff;
+        background-color: #66bb6a;
+      }
+    }
+  }
+  .team-list {
+    &_item {
+      margin-bottom: 0;
+      & + & {
+        margin-left: 0;
+        margin-top: 25px;
+      }
+      &_ava {
+        margin: 0;
+      }
+      &_name {
+        margin-top: 19px;
+        font-size: 20px;
+        line-height: 24px;
+      }
+      &_position {
+        font-size: 13px;
+        margin-top: 7px;
+        max-width: 300px;
+      }
+      &_icon {
+        margin-top: 5px;
+        margin-bottom: 10px;
+      }
+      &_description {
+        max-width: 100%;
+      }
+    }
+  }
+  .calculate {
+    &-form {
+      &_mask {
+        height: 50%;
+      }
+      &__sort {
+        flex-wrap: wrap;
+        &-head {
+          width: 100%;
+          margin-bottom: 15px;
+        }
+        &-btn {
+          width: 42.96%;
+          & + & {
+            margin-left: 10px;
+          }
+          &-cloud {
+            display: none;
+          }
+        }
+      }
+      &__steps {
+        margin-bottom: 20px;
+        &::before {
+          width: 36px;
+          height: 36px;
+          margin-right: 10px;
+        }
+        &--first {
+          margin-top: 50px;
+          padding: 0 10px;
+        }
+      }
+      &_result {
+        width: 100vw;
+        box-sizing: border-box;
+        padding: 20px 0px;
+        &-head {
+          padding: 0 10px;
+          margin-top: 40px;
+        }
+        &_item {
+          width: calc(100vw - 20px);
+          margin-left: 10px;
+          margin-right: 10px;
+          padding: 20px;
+          & + & {
+            margin-left: 10px;
+            margin-top: 15px;
+          }
+        }
+      }
+      &_radio {
+        height: 48px;
+        min-width: 48px;
+        &_text {
+          padding: 11px;
+        }
+        input {
+          height: 0;
+          width: 0;
+        }
+      }
+      &_btn {
+        margin-top: 0;
+        .btn {
+          margin-top: 0;
+        }
+      }
+      &_checkbox {
+        display: flex;
+        align-items: center;
+        &-wrapper {
+          display: flex;
+          margin-top: 30px;
+        }
+        &-group {
+          margin-top: 0;
+          padding: 20px 0 25px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-gap: 20xp 45px;
+        }
+        &_text {
+          font-size: 12px;
+          line-height: 15px;
+        }
+      }
+      &_fields {
+        margin-top: 20px;
+        padding: 0 10px;
+        display: flex;
+        flex-direction: column;
+      }
+      &_field {
+        white-space: unset;
+        & + & {
+          margin-top: 20px;
+        }
+        &_label {
+          width: 100%;
+          margin-bottom: 3px;
+          font-size: 14px;
+          line-height: 26px;
+        }
+        &_control input,
+        select {
+          height: 48px;
+        }
+      }
+      &_map {
+        &_label {
+          margin-top: 0;
+          margin-bottom: 18px;
+          text-align: center;
+          &_hide {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+  .short-group-3 {
+    max-width: 28%;
+  }
+  .wide-group {
+    flex-wrap: nowrap;
+  }
+  .mt-20 {
+    select {
+      padding-left: 11px;
+      padding-right: 0;
+    }
+  }
+  #chartdiv {
+    height: 200px;
+    // width: 340px;
+    margin-left: -20px;
   }
 }
 

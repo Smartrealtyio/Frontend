@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Результаты поиска выгодных предложений -->
-    <div class="calculate-form_error" id="search-form_error">
+    <div class="calculate-form_error" id="search-form_error" v-show="isError">
       <span
         >Предложений не найдено. Пожалуйста, измените масштаб карты или
         настройки фильтра.</span
@@ -12,8 +12,9 @@
         <a id="results-list" style="position: relative; top: -80px;"></a>
         <div class="main_section__team_title">
           <!--<span id="visible-items-count"></span> из-->
-          <span id="search-items-count">{{ searchData.length }}</span> из
-          предложений <span>12</span>
+          <span>Найдено </span>
+          <span id="search-items-count">{{ searchData.length }}</span>
+          предложений
         </div>
         <div class="calculate-form__sort">
           <div class="calculate-form__sort-head">Сортировать:</div>
@@ -60,10 +61,11 @@
               <span
                 class="results-list_item_desc_metro"
                 data-metro_hidden="hidden"
+                v-if="item.metro"
               >
-                <span data-metro="text">{{ item.metro }}</span
+                <span data-metro="text" v-if="item.metro !== 'undefined'">{{ item.metro }}</span
                 >,
-                <span data-time_to_metro="text">{{ item.time_to_metro }}</span>
+                <span data-time_to_metro="text" v-if="item.time_to_metro !== 'undefined'">{{ item.time_to_metro }}</span>
                 мин
               </span>
             </div>
@@ -85,21 +87,8 @@
             </div>
           </a>
         </div>
-        <div class="show-more">
-          <button class="show-more_btn" id="show-more-button">
-            Показать ещё
-          </button>
-        </div>
       </div>
     </div>
-    <!-- <div class="calculate-form__pagination">
-
-    </div> -->
-    <div
-      class="calculate-form_loading"
-      id="loading_results"
-      style="display: none;"
-    ></div>
   </div>
 </template>
 
@@ -109,6 +98,9 @@ export default {
     searchData: {
       type: Array,
     },
+    isError: {
+      type: Boolean
+    }
   },
   data() {
     return {
@@ -120,7 +112,7 @@ export default {
         },
         {
           text: "по выгодности %",
-          cat: "visible_ profit",
+          cat: "visible_profit",
           cloud: '% выгодности предложения относительно среднерыночной стоимости'
         },
       ],
@@ -130,7 +122,13 @@ export default {
     filtredData() {
       const flats = [...this.searchData]
       return flats.sort((elem1, elem2) => {
-        return +(elem1[this.currentCat].split(' ').join('')) - +(elem2[this.currentCat].split(' ').join(''))
+        if(typeof elem1[this.currentCat] === 'string') {
+          return +(elem1[this.currentCat].replace(/\s/, '')) - +(elem2[this.currentCat].replace(/\s/, ''))
+        }
+        if(typeof elem1[this.currentCat] === "number") {
+          console.log(elem1 + '2')
+          return elem1[this.currentCat] - elem2[this.currentCat]
+        }
       })
     }
   },

@@ -16,11 +16,27 @@
         ></change-city>
       </div>
       <div class="calculate-form_field">
+        <div class="calculate-form_field_control">
+          <div class="calculate-form_radios-group wide-group-2">
+            <label class="calculate-form_radio">
+              <input type="radio" name="secondary" value="1" checked required />
+              <span class="calculate-form_radio_mask"></span>
+              <span class="calculate-form_radio_text">Вторичка</span>
+            </label>
+            <label class="calculate-form_radio">
+              <input type="radio" name="secondary" value="0" required />
+              <span class="calculate-form_radio_mask"></span>
+              <span class="calculate-form_radio_text">Новостройка</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="calculate-form_field">
         <div class="calculate-form_field_label">
           Количество комнат
         </div>
         <div class="calculate-form_field_control">
-          <div class="calculate-form_radios-group">
+          <div class="calculate-form_radios-group wide-group">
             <label class="calculate-form_radio">
               <input type="radio" name="rooms" value="-1" />
               <span class="calculate-form_radio_mask"></span>
@@ -56,25 +72,35 @@
         <div
           class="calculate-form_field_control calculate-form_field_control_group"
         >
-          <div class="calculate-form_field_control_group_cell">
-            <input
-              type="number"
-              placeholder="от"
-              required
-              name="full_sq_from"
-              data-validator
-              min="5"
-            />
+          <div
+            class="calculate-form_field short-group-3 calculate-form__field--big"
+          >
+            <div class="calculate-form_field_control">
+              <input
+                type="number"
+                placeholder="от"
+                name="full_sq_from"
+                data-validator
+                v-model="searchInputs.sq_before"
+                min="5"
+              />&nbsp;
+              <span class="calculate-form_field_unit"> м<sup>2</sup> </span>
+            </div>
           </div>
-          <div class="calculate-form_field_control_group_cell">
-            <input
-              type="number"
-              placeholder="до"
-              required
-              name="full_sq_to"
-              data-validator
-              min="5"
-            />
+          <div
+            class="calculate-form_field short-group-3 calculate-form__field--big"
+          >
+            <div class="calculate-form_field_control">
+              <input
+                type="number"
+                placeholder="до"
+                name="full_sq_to"
+                data-validator
+                v-model="searchInputs.sq_to"
+                min="5"
+              />&nbsp;
+              <span class="calculate-form_field_unit"> м<sup>2</sup> </span>
+            </div>
           </div>
         </div>
       </div>
@@ -91,46 +117,38 @@
         <span>Дополнительные опции</span>
       </label>
       <div class="additional-params_params" id="additional-params">
-        <div class="calculate-form_field">
-          <div class="calculate-form_field_label">
-            Тип постройки
+        <div class="short-group calculate-form_field">
+          <div
+            class="calculate-form_field short-group-3 calculate-form__field--big"
+          >
+            <div class="calculate-form_field_label">
+              Площадь кухни
+            </div>
+            <div class="calculate-form_field_control">
+              <input
+                type="number"
+                name="kitchen_sq1"
+                data-validator
+                min="5"
+              />&nbsp;
+              <span class="calculate-form_field_unit"> м<sup>2</sup> </span>
+            </div>
           </div>
-          <div class="calculate-form_field_control">
-            <select name="building_type_str">
-              <option value="">Любой</option>
-              <option value="0">Блочный</option>
-              <option value="1">Кирпичный</option>
-              <option value="2">Монолит</option>
-              <option value="3">Кирп Монолит</option>
-              <option value="4">Панельный</option>
-              <option value="6">Деревянный</option>
-              <option value="5">Неизвестный</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="calculate-form_field">
-          <div class="calculate-form_field_label">
-            Площадь кухни
-          </div>
-          <div class="calculate-form_field_control">
-            <input
-              type="number"
-              name="kitchen_sq"
-              data-validator
-              min="5"
-            />&nbsp;
-            <span class="calculate-form_field_unit"> м<sup>2</sup> </span>
-          </div>
-        </div>
-
-        <div class="calculate-form_field">
-          <div class="calculate-form_field_label">
-            Жилая площадь
-          </div>
-          <div class="calculate-form_field_control">
-            <input type="number" name="life_sq" data-validator min="5" />&nbsp;
-            <span class="calculate-form_field_unit"> м<sup>2</sup> </span>
+          <div
+            class="calculate-form_field short-group-3 calculate-form__field--big"
+          >
+            <div class="calculate-form_field_label">
+              Жилая площадь
+            </div>
+            <div class="calculate-form_field_control">
+              <input
+                type="number"
+                name="life_sq"
+                data-validator
+                min="5"
+              />&nbsp;
+              <span class="calculate-form_field_unit"> м<sup>2</sup> </span>
+            </div>
           </div>
         </div>
 
@@ -141,30 +159,38 @@
           <div
             class="calculate-form_field_control calculate-form_field_control_group"
           >
-            <div class="calculate-form_field_control_group_cell">
-              <input
-                type="number"
-                name="price_from"
-                data-validator
-                placeholder="от"
-              />&nbsp;
+            <div
+              class="calculate-form_field short-group-3 calculate-form__field--big"
+            >
+              <div class="calculate-form_field_control">
+                <input
+                  type="number"
+                  name="price_from"
+                  placeholder="от"
+                  data-validator
+                />
+              </div>
             </div>
-            <div class="calculate-form_field_control_group_cell">
-              <input
-                type="number"
-                name="price_to"
-                data-validator
-                placeholder="до"
-              />&nbsp;
+            <div
+              class="calculate-form_field short-group-3 calculate-form__field--big"
+            >
+              <div class="calculate-form_field_control">
+                <input
+                  type="number"
+                  name="price_to"
+                  placeholder="до"
+                  data-validator
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="calculate-form_checkbox-group">
+        <div class="calculate-form_checkbox-group column-wide-2">
           <label class="calculate-form_checkbox">
             <input type="checkbox" name="renovation" />
             <span class="calculate-form_checkbox_mask"></span>
-            <span class="calculate-form_checkbox_text">Хороший ремонт</span>
+            <span class="calculate-form_checkbox_text">Ремонт</span>
           </label>
           <label class="calculate-form_checkbox">
             <input type="checkbox" name="has_elevator" />
@@ -174,7 +200,7 @@
           <label class="calculate-form_checkbox">
             <input type="checkbox" name="floor_first" />
             <span class="calculate-form_checkbox_mask"></span>
-            <span class="calculate-form_checkbox_text">Первый жилой этаж</span>
+            <span class="calculate-form_checkbox_text">Первый этаж</span>
           </label>
           <label class="calculate-form_checkbox">
             <input type="checkbox" name="floor_last" />
@@ -183,10 +209,22 @@
           </label>
         </div>
       </div>
-      <div class="calculate-form_btn">
-        <button type="submit" class="btn btn-submit">Найти</button>
+      <div class="calculate-form_btn-wrapper">
+        <div class="calculate-form_btn">
+          <button type="submit" class="btn btn-submit">Найти</button>
+        </div>
+        <div
+          class="calculate-form_btn--nodata"
+          v-show="
+            this.searchInputs.sq_to === '' || this.searchInputs.sq_before === ''
+          "
+        ></div>
       </div>
     </form>
+    <search-results
+      :isError="isSearchError"
+      :searchData="resultsData"
+    ></search-results>
 
     <!-- Форма расчета стоимости квартиры -->
     <form
@@ -194,6 +232,7 @@
       id="calculate-form"
       @submit.prevent="submitCalculate"
     >
+      <div class="calculate-form_mask" v-show="!coordChanged"></div>
       <div class="calculate-form_map_label calculate-form_map_label_hide">
         укажите точку на карте
       </div>
@@ -221,7 +260,7 @@
         <div class="calculate-form_field_control">
           <div class="calculate-form_radios-group wide-group-2">
             <label class="calculate-form_radio">
-              <input type="radio" name="secondary" value="1" required />
+              <input type="radio" name="secondary" value="1" checked required />
               <span class="calculate-form_radio_mask"></span>
               <span class="calculate-form_radio_text">Вторичка</span>
             </label>
@@ -234,7 +273,7 @@
         </div>
       </div>
 
-      <div class="newhouse calculate-form_field">
+      <div class="newhouse calculate-form_field hide">
         <div class="calculate-form_field_label">
           Готовность
         </div>
@@ -255,7 +294,7 @@
       </div>
 
       <div
-        class="newhouse calculate-form_field calculate-form_field-double-custom mt-20"
+        class="newhouse calculate-form_field calculate-form_field-double-custom mt-20 hide"
       >
         <div class="calculate-form_field">
           <div class="calculate-form_field_label">
@@ -416,6 +455,30 @@
         </button>
       </div>
     </form>
+    <div class="calculate-form_result" v-show="isDataReady">
+      <div class="calculate-form_result_item">
+        <div class="calculate-form_result_item_title">Прогнозируемая стоимость продажи</div>
+        <div class="calculate-form_result_item_value" ref="result_price"></div>
+      </div>
+      <div class="calculate-form_result_item">
+        <div class="calculate-form_result_item_title">
+          Прогнозируемый срок продажи 
+        </div>
+        <div
+          class="calculate-form_result_item_value"
+          ref="result_duration"
+        ></div>
+      </div>
+      <div class="calculate-form_result-head" v-show="!isDataEmpty">
+        График зависимости срока продажи от стоимости квартиры:
+      </div>
+      <div id="chartdiv" v-show="!isDataEmpty"></div>
+
+      <div class="calculate-form_error" v-show="isDataEmpty">
+        <span>Недостаточно данных</span>
+      </div>
+    </div>
+    <div class="calculate-form_loading" v-if="isLoading"></div>
   </div>
 </template>
 
@@ -424,9 +487,9 @@ import axios from "axios";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-// import testJson from "../../assets/test.json";
 
 import changeCity from "./changeCity";
+import searchResults from "./searchResults";
 export default {
   props: {
     map: {
@@ -438,39 +501,47 @@ export default {
     calculateFormRequest: {
       required: true,
     },
+    markCoord: {
+      type: Object,
+    },
   },
   components: {
     changeCity,
+    searchResults,
   },
   data() {
     return {
+      isSearchError: false,
+      isLoading: false,
+      isDataReady: false,
+      isDataEmpty: false,
       currentCity: 0,
       form_error: null,
       searchForm: null,
       resultsBlock: null,
-      loading_results: null,
       searchFormRequest: {},
-      show_more_button: null,
       searchResult: {},
       resultItem: null,
       search_items_count: null,
       calculateForm: null,
-      results: null,
-      emptyMsg: null,
-      chartColorsList: [],
-      resultPrice: null,
-      resultDuration: null,
       chartDiv: null,
       chart: {},
       visible_items_count: null,
       mainClusterer: this.getClusterer,
       resultsData: [],
+      searchInputs: {
+        sq_before: "",
+        sq_to: "",
+      },
     };
   },
   computed: {
     getClusterer() {
       return this.clusterer;
     },
+    coordChanged() {
+      return this.markCoord.lat != null ? true : false;
+    }
   },
   methods: {
     changeCurrentCity(index) {
@@ -481,6 +552,8 @@ export default {
       this.sendCalculateForm();
     },
     sendCalculateForm() {
+      this.isLoading = true;
+      this.isDataReady = false;
       const fields = this.calculateForm.querySelectorAll(["input", "select"]);
       const values = {};
 
@@ -490,15 +563,12 @@ export default {
           switch (itemType) {
             case "checkbox":
               values[itemModel.name] = itemModel.checked ? "1" : "0";
-              console.log(values[itemModel.name], itemModel.value);
               break;
             case "radio":
               if (itemModel.checked) values[itemModel.name] = itemModel.value;
-              console.log(itemModel.name, itemModel.value);
               break;
             default:
               values[itemModel.name] = itemModel.value || undefined;
-              console.log(values[itemModel.name], itemModel.value);
           }
         }
       });
@@ -507,68 +577,29 @@ export default {
         this.calculateFormRequest[k] = values[k];
       }
 
-      this.results.classList.add("hide");
-      this.emptyMsg.classList.add("hide");
-
-      this.loading_results.classList.add("show");
-
+      this.data;
       axios
         .get("/map", {
           params: this.calculateFormRequest,
         })
         .then((res) => {
           res = res.data;
-          console.log(res);
-          const chartData = [];
-          const allPeriod = res.PLot[res.PLot.length - 1]["x"];
-          let latestValue = res.PLot.shift();
-
-          const stepColor = allPeriod / this.chartColorsList.length;
-
-          const allColors = this.chartColorsList.map((item) => {
-            return item;
-          });
-
-          let linesColor = allColors.shift();
-
-          for (let k = latestValue["x"]; k < allPeriod; k++) {
-            if (res.PLot[0].x === k) {
-              latestValue = res.PLot.shift();
-              if (latestValue["x"] / stepColor < res.PLot[0]["x"] / stepColor) {
-                linesColor = allColors.shift();
-              }
-            }
-            while (res.PLot[0].x <= k) {
-              res.PLot.shift();
-            }
-            if (latestValue["y"] !== 0) {
-              chartData.push({
-                x: k,
-                y: latestValue["y"],
-                lineColor: linesColor,
-              });
-            }
+          console.log(res)
+          this.isLoading = false;
+          this.isDataReady = true;
+          if (res.PLot.length == 1) {
+            this.isDataEmpty = true;
           }
-          if (res.Price) {
-            this.resultPrice.textContent = res.Price.toLocaleString() + " руб.";
-            this.resultDuration.textContent = res.Duration
-              ? res.Duration + " дн."
-              : " - ";
-            this.results.classList.add("show");
-            this.loading_results.classList.remove("show");
-            this.loading_results.classList.add("hide");
+          if (window.innerWidth < 767) {
+            res.PLot.forEach((item) => {
+              item.price = Math.floor(item.price / 1000);
+            });
+            this.chart.data = res.PLot;
           } else {
-            this.results.classList.add("hide");
+            this.chart.data = res.PLot;
           }
-          if (chartData.length) {
-            this.chartDiv.classList.add("show");
-            this.chart.data = chartData;
-          } else {
-            this.chartDiv.classList.remove("show");
-            this.chart.data = [];
-
-            this.emptyMsg.classList.add("show");
-          }
+          this.$refs.result_price.innerHTML = res.Price ? res.Price.toLocaleString() + ' руб.' : ' - '
+          this.$refs.result_duration.innerHTML = res.Duration ? res.Duration + ' дней.' : ' - '
         })
         .catch((e) => console.log(e));
     },
@@ -577,14 +608,10 @@ export default {
       this.resultsData = [];
     },
     sendSearchForm(notCreateData, addData) {
-      // const searchResultsBlock = document.querySelector("#results-list-block");
-      // searchResultsBlock.classList.add("in-progress");
-
       this.map.geoObjects.remove(this.mainClusterer);
+      this.isLoading = true;
 
       if (!notCreateData) {
-        // searchResultsBlock.classList.add("hide");
-        // this.resultsBlock.innerHTML = "";
         this.createSearchRequest();
       }
 
@@ -599,18 +626,11 @@ export default {
         })
         .then((res) => {
           res = res.data;
-          // let res = testJson;
-          console.log(res, addData);
-          // searchResultsBlock.classList.add("show");
-          // searchResultsBlock.remove("in-progress");
-          if (res["max_page"] === res["page"]) {
-            this.show_more_button.classList.add("hide");
-          } else {
-            this.show_more_button.classList.remove("hide");
-          }
+          this.isLoading = false;
+          this.isSearchError = res.length === 0 ? true : false;
+          this.resultsData = [];
           if (!notCreateData) {
             this.searchResult = res["flats"];
-            this.iniShowMoreResults();
           } else {
             this.searchResult = this.searchResult.concat(res["flats"]);
           }
@@ -663,7 +683,6 @@ export default {
         }
         this.resultsData.push(resultItemObj);
       });
-      this.$emit("set-res", this.resultsData);
     },
     createClusters(data) {
       var customItemContentLayout = window[
@@ -726,15 +745,6 @@ export default {
       }
 
       this.mainClusterer.add(placemarks);
-    },
-    iniShowMoreResults() {
-      let currentPage = 1;
-      this.show_more_button.addEventListener("click", () => {
-        currentPage++;
-        this.sendSearchForm(true, {
-          page: currentPage,
-        });
-      });
     },
     createSearchRequest() {
       const fields = this.searchForm.querySelectorAll(["input", "select"]);
@@ -809,65 +819,48 @@ export default {
     this.searchForm = document.querySelector("#search-form");
     this.calculateForm = document.querySelector("#calculate-form");
     this.resultsBlock = document.querySelector("#visible-results");
-    this.loading_results = document.querySelector("#loading_results");
-    this.show_more_button = document.querySelector("#show-more-button");
     // this.resultItem = document.querySelector("#result-item-tpl").querySelector('.results-list_item');
     this.search_items_count = document.querySelector("#search-items-count");
-    this.results = document.querySelector("#results");
-    this.emptyMsg = document.querySelector("#empty-msg");
-    this.resultPrice = document.querySelector("#result_price");
-    this.resultDuration = document.querySelector("#result_duration");
     this.chartDiv = document.querySelector("#chartdiv");
     this.visible_items_count = document.querySelector("#visible-items-count");
-
-    for (let k = 1; k <= 32; k++) {
-      if (k <= 16) {
-        this.chartColorsList.push(
-          "rgb(" + (128 + k * 8 - 1) + ", " + (k * 16 - 1) + ", " + k * 3 + ")"
-        );
-      } else {
-        this.chartColorsList.push(
-          "rgb(" +
-            ((32 - k) * 16 - 1) +
-            ", " +
-            (128 + (32 - k) * 8 - 1) +
-            ", " +
-            k * 3 +
-            ")"
-        );
-      }
-    }
 
     am4core.ready(() => {
       am4core.useTheme(am4themes_animated);
       this.chart = am4core.create("chartdiv", am4charts.XYChart);
       var categoryAxis = this.chart.xAxes.push(new am4charts.CategoryAxis());
-      categoryAxis.renderer.grid.template.location = 0;
-      categoryAxis.renderer.ticks.template.disabled = true;
-      categoryAxis.renderer.line.opacity = 0;
-      categoryAxis.renderer.grid.template.disabled = true;
-      categoryAxis.renderer.minGridDistance = 50;
-      categoryAxis.dataFields.category = "x";
+      categoryAxis.dataFields.category = "term";
       categoryAxis.startLocation = 0.1;
-      categoryAxis.endLocation = 0.6;
+      categoryAxis.endLocation = 0.8;
 
       var valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+      valueAxis.numberFormatter = new am4core.NumberFormatter();
+      if (window.innerWidth < 767) {
+        valueAxis.numberFormatter.numberFormat = "# ' тыс'";
+        valueAxis.renderer.fontSize = "10px";
+      } else {
+        valueAxis.numberFormatter.numberFormat = "# ' руб'";
+      }
       valueAxis.tooltip.disabled = true;
-      valueAxis.renderer.line.opacity = 0;
-      valueAxis.renderer.ticks.template.disabled = true;
+      // valueAxis.renderer.line.opacity = 0;
+      // valueAxis.renderer.ticks.template.disabled = true;
       valueAxis.min = 0;
 
       var lineSeries = this.chart.series.push(new am4charts.LineSeries());
-      lineSeries.dataFields.categoryX = "x";
-      lineSeries.dataFields.valueY = "y";
+      lineSeries.dataFields.categoryX = "term";
+      lineSeries.dataFields.valueY = "price";
       lineSeries.tooltipText = "Цена: {valueY.value} руб.";
-      lineSeries.fillOpacity = 0.8;
-      lineSeries.strokeWidth = 1;
-      lineSeries.propertyFields.stroke = "lineColor";
-      lineSeries.propertyFields.fill = "lineColor";
+      // lineSeries.fillOpacity = 0.8;
+      lineSeries.strokeWidth = 2;
+      lineSeries.stroke = am4core.color("#66BB6A");
+
+      var latitudeBullet = lineSeries.bullets.push(
+        new am4charts.CircleBullet()
+      );
+      latitudeBullet.circle.stroke = am4core.color("#66BB6A");
+      latitudeBullet.circle.strokeWidth = 6;
 
       this.chart.cursor = new am4charts.XYCursor();
-      this.chart.cursor.behavior = "panX";
+      // this.chart.cursor.behavior = "panX";
       this.chart.cursor.lineX.opacity = 0;
       this.chart.cursor.lineY.opacity = 0;
     });
