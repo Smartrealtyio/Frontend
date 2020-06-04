@@ -665,7 +665,7 @@ export default {
       // Add percent sign to all numbers
       // chart3.numberFormatter.numberFormat = "#.#'%'";
 
-      this.chart3.dateFormatter.inputDateFormat = "dd";
+      this.chart3.dateFormatter.inputDateFormat = "yyyy-MM-dd";
       // Add data
       const obj3 = {
         s_opacity: "#E0F1E1",
